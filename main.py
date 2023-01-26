@@ -5,7 +5,13 @@ import sys
 import io
 import pandas as pd
 from collections import OrderedDict
+import numpy
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from scipy.stats import pearsonr
 
+
+# Calculate the Quality Measure for the Columns, which have Date.
 def calculate_quality_measure_date(values):
     datetime_values = []
     for value in values:
@@ -28,12 +34,14 @@ def calculate_quality_measure_date(values):
         return []
 
 
-def quality_measure(values, weight=1):
+# Calculate the Quality Measure.
+def quality_measure(values):
     lowest_value, highest_value = min(values), max(values)
-    quality_measure = [(value - lowest_value) / (highest_value - lowest_value) * 5 * weight for value in values]
+    quality_measure = [(value - lowest_value) / (highest_value - lowest_value) * 5 for value in values]
     return quality_measure
 
 
+# Calculate the Quality Measure for the each row in the .csv file.
 def calculate_quality_measure(file_name):
     # Read the CSV file
     df = pd.read_csv(file_name)
@@ -50,6 +58,7 @@ def calculate_quality_measure(file_name):
     return qm
 
 
+# Read a .csv file and return a string.
 def read_csv_file(file_path):
     data = ""
     with open(file_path, 'rb') as file:
@@ -61,6 +70,7 @@ def read_csv_file(file_path):
     return data
 
 
+# Extract the Columns from the .csv file.
 def extract_columns(csv_string: str, columns: list):
     # Create a DataFrame from the CSV string
     df = pd.read_csv(io.StringIO(csv_string))
@@ -70,10 +80,241 @@ def extract_columns(csv_string: str, columns: list):
     return extracted_columns
 
 
-def main():
-    file_name = " ".join(sys.argv[1:])
-    data = read_csv_file(file_name)
+# Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
+def plot_library_ratio_to_qm():
+    quality_measures = calculate_quality_measure("thresholds.csv")
+    quality_measures_df = pd.DataFrame(quality_measures.items(), columns=['repository_url', 'quality_measure'])
+    quality_measures_df.to_csv('quality_measures.csv', index=False)
+    original_dataset_df = pd.read_csv("dataset.csv")
 
+    # Key - Value (URL, (Library to Original Ratio, Quality Measure))
+    ratio_to_quality_measure = {}
+    for index, row in original_dataset_df.iterrows():
+        if row['repository_url'] == quality_measures_df.iloc[index]['repository_url']:
+            ratio_to_quality_measure.update({row['repository_url']: (row['library_to_original_ratio'], quality_measures_df.iloc[index]['quality_measure'])})
+
+    # Calculate Linear Regression between Library to Original Ratio and Quality Measure
+    x = []
+    y = []
+    for key, value in ratio_to_quality_measure.items():
+        x.append(value[0])
+        y.append(value[1])
+    
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Quality Measure')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-100, 5000) 
+    plt.ylim(0, 5)
+    plt.show()
+
+
+# Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
+def plot_to_releases():
+    dataset_df = pd.read_csv("dataset.csv")
+    thresholds_df = pd.read_csv("thresholds.csv")
+
+    # Key - Value (URL, (Library to Original Ratio, Quality Measure))
+    list = {}
+    for index, row in dataset_df.iterrows():
+        if row['repository_url'] == thresholds_df.iloc[index]['repository_url']:
+            list.update({row['repository_url']: (row['library_to_original_ratio'], thresholds_df.iloc[index]['latest_release'])})
+
+    # Calculate Linear Regression between Library to Original Ratio and Quality Measure
+    x = []
+    y = []
+    for key, value in list.items():
+        x.append(value[0])
+        y.append(value[1])
+    
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Latest Release')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-100, 5000) 
+    plt.ylim(0, 5)
+    plt.show()
+
+
+# Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
+def plot_to_creation_date():
+    dataset_df = pd.read_csv("dataset.csv")
+    thresholds_df = pd.read_csv("thresholds.csv")
+
+    # Key - Value (URL, (Library to Original Ratio, Quality Measure))
+    list = {}
+    for index, row in dataset_df.iterrows():
+        if row['repository_url'] == thresholds_df.iloc[index]['repository_url']:
+            list.update({row['repository_url']: (row['library_to_original_ratio'], thresholds_df.iloc[index]['creation_date'])})
+
+    x = []
+    y = []
+    for key, value in list.items():
+        x.append(value[0])
+        y.append(value[1])
+    
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Creation Dates')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-100, 5000) 
+    plt.ylim(0, 5)
+    plt.show()
+
+
+# Calculate and draw a plot for the Library to Original Ratio and Open to Closed Ratio.
+def plot_library_ratio_to_issues(data):
+    columns = extract_columns(data, ["open_closed_ratio", "library_to_original_ratio"])
+
+    # Calculate Linear Regression between Library to Original Ratio and Quality Measure
+    x = []
+    y = []
+
+    for value in columns["library_to_original_ratio"]:
+       x.append(value)
+
+    for value in columns["open_closed_ratio"]:
+       y.append(value) 
+
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Open Issues : Closed Issues Ratio')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-100, 5000) 
+    plt.ylim(0, 5)
+    plt.show()
+
+
+# Calculate and Draw a Plot between Library to Original Ratio and Stargazer Count.
+def plot_to_stars(data):
+    columns = extract_columns(data, ["library_to_original_ratio", "stargazer_count"])
+
+    x = []
+    y = []
+
+    for value in columns["library_to_original_ratio"]:
+       x.append(value)
+
+    for value in columns["stargazer_count"]:
+       y.append(value) 
+
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Stargazer Count')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-50, 5000) 
+    plt.ylim(-50, 10000)
+    plt.show() 
+
+
+# Calculate and Draw a Plot between Library to Original Ratio and Commit Count.
+def plot_to_commits(data):
+    columns = extract_columns(data, ["library_to_original_ratio", "commit_count"])
+
+    x = []
+    y = []
+
+    for value in columns["library_to_original_ratio"]:
+       x.append(value)
+
+    for value in columns["commit_count"]:
+       y.append(value) 
+
+    corr, _ = pearsonr(x, y) 
+    corr = round(corr, 5)
+
+    # Calculate coefficients, and function for the line of best fit.
+    coefficients = numpy.polyfit(x, y, 1)
+    polynomial = numpy.poly1d(coefficients)
+
+    # Plot the Values
+    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel('Library Code : Original Code Ratio')
+    plt.ylabel('Commit Count')
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
+
+    # Limiting the x -axis to make the plot more readable.
+    plt.xlim(-50, 5000) 
+    plt.ylim(-50, 5000)
+    plt.show() 
+
+
+# Generates Quality Measure Thresholds for each Repository.
+def generate_thresholds(data):
     columns = extract_columns(data, ["repository_name", "repository_url", "open_issue_count", "closed_issue_count", "open_closed_ratio", "commit_count", "original_codebase_size", "library_codebase_size", "library_to_original_ratio", "repository_type", "primary_language", "creation_date", "stargazer_count", "license_info", "latest_release"])
 
     # Quality Measure
@@ -95,19 +336,28 @@ def main():
     df = df.rename(columns={5: 'latest_release'})
     df.to_csv('thresholds.csv', index=False)
 
-    # Singular Quality Measures, Write to CSV    
-    quality_measures = calculate_quality_measure("thresholds.csv")
 
-    df = pd.DataFrame(quality_measures.items(), columns=['repository_url', 'quality_measure'])
-    df.to_csv('quality_measures.csv', index=False)
+def main():
+    file_name = " ".join(sys.argv[1:])
+    data = read_csv_file(file_name)
 
     # Visualize Linear Regression
+
     # Ratio of Library Code : Open Closed Ratio
     # Ratio of Library Code : Stargazer Count
     # Ratio of Library Code : Commit Count
     # Ratio of Library Code : Creation Date
     # Ratio of Library Code : Latest Release
     # Ratio of Library Code : Average Quality Measure
-    
 
-main()
+    generate_thresholds(data)
+    plot_library_ratio_to_qm() 
+    plot_library_ratio_to_issues(data)
+    plot_to_stars(data)
+    plot_to_commits(data)
+    plot_to_creation_date()
+    plot_to_releases()
+
+
+if __name__ == "__main__": 
+    main()
