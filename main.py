@@ -34,10 +34,17 @@ def calculate_quality_measure_date(values):
         return []
 
 
-# Calculate the Quality Measure.
+# This function takes in a list of "values" as input and calculates a "quality measure" for each value in the list. 
+# The quality measure is calculated as a value between 0 and 5, where 0 is the lowest value and 5 is the highest value. 
+# The function returns a list of the quality measures for each input value.
 def quality_measure(values):
+    # Find the lowest and highest values in the input list
     lowest_value, highest_value = min(values), max(values)
+    
+    # Calculate the quality measure for each value in the input list
     quality_measure = [(value - lowest_value) / (highest_value - lowest_value) * 5 for value in values]
+    
+    # Return the list of quality measures
     return quality_measure
 
 
