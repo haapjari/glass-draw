@@ -74,6 +74,7 @@ def read_csv_file(file_path):
         csv_reader = csv.reader(file.read().decode(result['encoding']).splitlines())
         for row in csv_reader:
             data += ",".join(row) + "\n"
+
     return data
 
 
@@ -84,6 +85,7 @@ def extract_columns(csv_string: str, columns: list):
     extracted_columns = {}
     for column in columns:
         extracted_columns[column] = df[column]
+
     return extracted_columns
 
 
@@ -107,8 +109,9 @@ def plot_library_ratio_to_qm():
         x.append(value[0])
         y.append(value[1])
     
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -117,10 +120,22 @@ def plot_library_ratio_to_qm():
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
+    plt.xlabel('Library to Original Code Ratio')
     plt.ylabel('Quality Measure')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -148,8 +163,9 @@ def plot_to_releases():
         x.append(value[0])
         y.append(value[1])
     
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -158,10 +174,22 @@ def plot_to_releases():
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
+    plt.xlabel('Library to Original Code Ratio')
     plt.ylabel('Latest Release')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='lower right', bbox_to_anchor=(1.0, 0.15))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='lower right', bbox_to_anchor=(1.0, 0.0))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -188,8 +216,9 @@ def plot_to_creation_date():
         x.append(value[0])
         y.append(value[1])
     
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -198,10 +227,22 @@ def plot_to_creation_date():
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
+    plt.xlabel('Library to Original Code Ratio')
     plt.ylabel('Creation Dates')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+    
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='lower right', bbox_to_anchor=(1, 0.15))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='lower right', bbox_to_anchor=(1, 0.0))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -225,8 +266,9 @@ def plot_library_ratio_to_issues(data):
     for value in columns["open_closed_ratio"]:
        y.append(value) 
 
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -235,10 +277,22 @@ def plot_library_ratio_to_issues(data):
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
-    plt.ylabel('Open Issues : Closed Issues Ratio')
+    plt.xlabel('Library to Original Code Ratio')
+    plt.ylabel('Open to Closed Issues Ratio')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+    
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -261,8 +315,9 @@ def plot_to_stars(data):
     for value in columns["stargazer_count"]:
        y.append(value) 
 
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -271,10 +326,22 @@ def plot_to_stars(data):
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
+    plt.xlabel('Library to Original Code Ratio')
     plt.ylabel('Stargazer Count')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+        
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -297,8 +364,9 @@ def plot_to_commits(data):
     for value in columns["commit_count"]:
        y.append(value) 
 
-    corr, _ = pearsonr(x, y) 
-    corr = round(corr, 5)
+    coefficient, pvalue = pearsonr(x, y) 
+    coefficient = round(coefficient, 8)
+    pvalue = round(pvalue, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -307,10 +375,22 @@ def plot_to_commits(data):
     # Plot the Values
     plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
     plt.plot(x, polynomial(x),color='black', linewidth=0.05, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel('Library Code : Original Code Ratio')
+    plt.xlabel('Library to Original Code Ratio')
     plt.ylabel('Commit Count')
     plt.autoscale(enable=True, axis='both', tight=None)
-    plt.legend(["Pearson's Correlation: " + str(corr)])
+
+    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
+    legend_coefficient.set_title("Correlation Coefficient")
+    legend_coefficient.get_title().set_fontsize('small')
+    legend_coefficient.get_title().set_fontweight('bold')
+    
+    legend_p = plt.legend(["p = " + str(pvalue)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
+    legend_p.set_title("Probability Value")
+    legend_p.get_title().set_fontsize('small')
+    legend_p.get_title().set_fontweight('bold')
+
+    plt.gca().add_artist(legend_coefficient)
+    plt.gca().add_artist(legend_p)
 
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
@@ -357,12 +437,12 @@ def main():
     # Ratio of Library Code : Latest Release
     # Ratio of Library Code : Average Quality Measure
 
-    generate_thresholds(data)
-    plot_library_ratio_to_qm() 
-    plot_library_ratio_to_issues(data)
-    plot_to_stars(data)
-    plot_to_commits(data)
-    plot_to_creation_date()
+    # generate_thresholds(data)
+    # plot_library_ratio_to_qm() 
+    # plot_library_ratio_to_issues(data)
+    # plot_to_stars(data)
+    # plot_to_commits(data)
+    # plot_to_creation_date()
     plot_to_releases()
 
 
