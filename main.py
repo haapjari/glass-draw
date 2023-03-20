@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from scipy.stats import pearsonr
 
+# Set the Matplotlib Backend to Agg, so that the plots can be saved to a file.
+mpl.use('agg')
 
 # Calculate the Quality Measure for the Columns, which have Date.
 def calculate_quality_measure_date(values):
@@ -91,27 +93,40 @@ def extract_columns(csv_string: str, columns: list):
 
 # Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
 def plot_library_ratio_to_qm():
-    quality_measures = calculate_quality_measure("thresholds.csv")
-    quality_measures_df = pd.DataFrame(quality_measures.items(), columns=['repository_url', 'quality_measure'])
-    quality_measures_df.to_csv('quality_measures.csv', index=False)
-    original_dataset_df = pd.read_csv("dataset.csv")
+    data = pd.read_csv("2023-03-21_normalized.csv")
 
-    # Key - Value (URL, (Library to Original Ratio, Quality Measure))
-    ratio_to_quality_measure = {}
-    for index, row in original_dataset_df.iterrows():
-        if row['repository_url'] == quality_measures_df.iloc[index]['repository_url']:
-            ratio_to_quality_measure.update({row['repository_url']: (row['library_to_original_ratio'], quality_measures_df.iloc[index]['quality_measure'])})
+    # Calculate the mean for each specified column
+    mean_columns = ['open_closed_ratio', 'commit_count', 'creation_date', 'stargazer_count', 'latest_release']
+    means = data[mean_columns].mean()
 
-    # Calculate Linear Regression between Library to Original Ratio and Quality Measure
-    x = []
-    y = []
-    for key, value in ratio_to_quality_measure.items():
-        x.append(value[0])
-        y.append(value[1])
-    
-    coefficient, pvalue = pearsonr(x, y) 
-    coefficient = round(coefficient, 8)
-    pvalue = round(pvalue, 8)
+    # Save the means to a dictionary with the repository_url as a key
+    quality_measure_dict = {}
+    library_ratio_dict = {}
+    for index, row in data.iterrows():
+        repository_url = row['repository_url']
+
+        mean_values = row[mean_columns].mean()
+        quality_measure_dict[repository_url] = mean_values
+
+        # Store the library_to_original_ratio value in the library_ratio_dict
+        library_ratio = row['library_to_original_ratio']
+        library_ratio_dict[repository_url] = library_ratio
+
+    x = []  # Store library_to_original_ratio values
+    y = []  # Store quality_measure values
+
+    # Iterate through the keys in the library_ratio_dict
+    for repository_url, library_ratio in library_ratio_dict.items():
+    # Check if the repository_url exists in the mean_dict
+        if repository_url in quality_measure_dict:
+            quality_measure = quality_measure_dict[repository_url]
+        
+            x.append(library_ratio)
+            y.append(quality_measure)
+   
+    correlation_coefficient, p_value = pearsonr(x, y) 
+    correlation_coefficient = round(correlation_coefficient, 8)
+    p_value = round(p_value, 8)
 
     # Calculate coefficients, and function for the line of best fit.
     coefficients = numpy.polyfit(x, y, 1)
@@ -124,12 +139,12 @@ def plot_library_ratio_to_qm():
     plt.ylabel('Quality Measure')
     plt.autoscale(enable=True, axis='both', tight=None)
 
-    legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
+    legend_coefficient = plt.legend(["r = " + str(correlation_coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
     legend_coefficient.set_title("Correlation Coefficient")
     legend_coefficient.get_title().set_fontsize('small')
     legend_coefficient.get_title().set_fontweight('bold')
     
-    legend_p = plt.legend(["p = " + str(pvalue)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
+    legend_p = plt.legend(["p = " + str(p_value)], loc='upper right', bbox_to_anchor=(1.0, 0.85))
     legend_p.set_title("Probability Value")
     legend_p.get_title().set_fontsize('small')
     legend_p.get_title().set_fontweight('bold')
@@ -140,9 +155,10 @@ def plot_library_ratio_to_qm():
     plt.grid(True, which='major', axis='both', linestyle='-', linewidth=0.05, color='grey', alpha=0.75)
 
     # Limiting the x -axis to make the plot more readable.
-    plt.xlim(-100, 5000) 
+    plt.xlim(0, 5) 
     plt.ylim(0, 5)
-    plt.show()
+    # plt.show()
+    plt.savefig('library_ratio_to_qm.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
 
 
 # Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
@@ -412,7 +428,8 @@ def generate_thresholds(data):
     quality_measure_thresholds["creation_date"] = calculate_quality_measure_date(columns["creation_date"])
     quality_measure_thresholds["stargazer_count"] = quality_measure(columns["stargazer_count"])
     quality_measure_thresholds["latest_release"] = calculate_quality_measure_date(columns["latest_release"])
-
+    quality_measure_thresholds["library_to_original_ratio"] = quality_measure(columns["library_to_original_ratio"])
+    
     # Write to CSV
     df = pd.DataFrame(quality_measure_thresholds)
     df = df.rename(columns={0: 'repository_url'})
@@ -421,12 +438,13 @@ def generate_thresholds(data):
     df = df.rename(columns={3: 'creation_date'})
     df = df.rename(columns={4: 'stargazer_count'})
     df = df.rename(columns={5: 'latest_release'})
-    df.to_csv('thresholds.csv', index=False)
+    df = df.rename(columns={6: 'library_to_original_ratio'})
+    df.to_csv('2023-03-21_thresholds.csv', index=False)
 
 
 def main():
-    file_name = " ".join(sys.argv[1:])
-    data = read_csv_file(file_name)
+    # file_name = " ".join(sys.argv[1:])
+    # data = read_csv_file(file_name)
 
     # Visualize Linear Regression
 
@@ -438,12 +456,12 @@ def main():
     # Ratio of Library Code : Average Quality Measure
 
     # generate_thresholds(data)
-    # plot_library_ratio_to_qm() 
+    plot_library_ratio_to_qm() 
     # plot_library_ratio_to_issues(data)
     # plot_to_stars(data)
     # plot_to_commits(data)
     # plot_to_creation_date()
-    plot_to_releases()
+    # plot_to_releases()
 
 
 if __name__ == "__main__": 
