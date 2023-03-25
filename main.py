@@ -1,14 +1,15 @@
-import analysis as a
-import utils 
+import analysis.analysis as a
+import utils.utils as utils 
 
 def main():
     # Read a File to a Variable.
-    dataset_file = utils.read_csv_file("data/dataset.csv")
+    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
-    # TODO: Extract Columns from a Variable to Dictionaries.
-    # utils.extract_columns
+    # Extract the Columns from the File.
+    dataset_columns = utils.extract_columns(dataset_file, ["repository_name", "repository_url", "open_issue_count", "closed_issue_count", "commit_count", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size"])
 
-    # TODO: Normalize all the values to 0 - 5.
+    # Normalize all the values to 0 - 5.
+    normalized_dataset = a.normalize_dataset(dataset_columns)
 
     # TODO: Calculate Mean (QM) and save that to separate variable.
 
@@ -32,8 +33,8 @@ def main():
     y = {"a": 4, "b": 5, "c": 6}
     rho, p = a.calculate_spearmanr(x, y)
 
-    print(rho)
-    print(p)
+    # print(rho)
+    # print(p)
 
 
 if __name__ == "__main__": 

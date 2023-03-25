@@ -66,13 +66,6 @@ def calculate_quality_measure(file_name):
 
     return qm
 
-
-
-
-
-
-
-
 # Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
 def plot_library_ratio_to_qm():
     data = pd.read_csv("2023-03-21_normalized.csv")
