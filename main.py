@@ -6,10 +6,13 @@ def main():
     dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
     # Extract the Columns from the File.
-    dataset_columns = utils.extract_columns(dataset_file, ["repository_name", "repository_url", "open_issue_count", "closed_issue_count", "commit_count", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size"])
+    dataset_columns = utils.extract_columns(dataset_file, ["repository_name", "repository_url", "open_issue_count", "closed_issue_count", "commit_count", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size", "library_to_original_ratio"])
 
-    # Normalize all the values to 0 - 5.
+    # Normalize all the values to 0 - 1.
     normalized_dataset = a.normalize_dataset(dataset_columns)
+
+    # Print the normalized values.
+    utils.print_column(normalized_dataset, "creation_date") 
 
     # TODO: Calculate Mean (QM) and save that to separate variable.
 

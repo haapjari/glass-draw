@@ -2,6 +2,7 @@ import csv
 import chardet
 import pandas as pd
 import sys
+from datetime import datetime
 import io
 
 # Read a .csv file and return a string.
@@ -25,3 +26,23 @@ def extract_columns(csv_string: str, columns: list):
         extracted_columns[column] = df[column]
 
     return extracted_columns
+
+def convert_to_unix_timestamps(date_strings):
+    # create an empty list to store the Unix timestamps
+    timestamps = []
+    date_format = "%Y-%m-%dT%H:%M:%SZ"
+
+    # iterate over the list of date strings
+    for date_str in date_strings:
+       datetime_object = datetime.strptime(date_str, date_format) 
+       unix_timestamp = datetime_object.timestamp()
+       timestamps.append(unix_timestamp)
+    
+    # return the list of Unix timestamps
+    return timestamps
+
+def print_column(columns, name):
+    for column in columns:
+        if column == name:
+            print(column)
+            print(columns[column])

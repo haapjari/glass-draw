@@ -1,49 +1,36 @@
 import unittest
 from datetime import datetime
-from analysis.analysis import normalize_dataset
+from analysis.analysis import normalize_date_values
 
-class TestNormalizeDataset(unittest.TestCase):
-    maxDiff = None 
+class TestDateNormalization(unittest.TestCase):
 
-    def test_normalize_dataset(self):
-        # Example input dictionary
-        dataset_columns = {
-            'repository_url': ['https://github.com/user/repo1', 'https://github.com/user/repo2', 'https://github.com/user/repo3'],
-            'open_issue_count': [10, 5, 3],
-            'closed_issue_count': [50, 30, 10],
-            'commit_count': [100, 200, 300],
-            'stargazer_count': [500, 1000, 2000],
-            'creation_date': ['2021-02-07T21:37:53Z', '2022-02-07T21:37:53Z', '2023-02-07T21:37:53Z'],
-            'latest_release': ['2022-02-07T21:37:53Z', '2023-02-07T21:37:53Z', '2024-02-07T21:37:53Z'],
-            'original_codebase_size': [10000, 20000, 30000],
-            'library_codebase_size': [5000, 10000, 15000]
-        }
+    def test_normalize_date_values(self):
+        date_list = ["2023-01-15T05:46:17Z", "2023-02-01T10:23:12Z", "2023-03-08T15:01:45Z"]
+        expected_output = [0.0, 0.4548944336099585, 1.0]
 
-        # Expected output dictionary
-        expected_output = {
-            'open_issue_count': [5.0, 2.5, 1.6666666666666667],
-            'closed_issue_count': [5.0, 2.5, 0.0],
-            'commit_count': [0.0, 2.5, 5.0],
-            'stargazer_count': [0.0, 2.5, 5.0],
-            'creation_date': [
-                datetime(2021, 2, 7, 21, 37, 53),
-                datetime(2022, 2, 7, 21, 37, 53),
-                datetime(2023, 2, 7, 21, 37, 53)
-            ],
-            'latest_release': [
-                datetime(2022, 2, 7, 21, 37, 53),
-                datetime(2023, 2, 7, 21, 37, 53),
-                datetime(2024, 2, 7, 21, 37, 53)
-            ],
-            'original_codebase_size': [0.0, 2.5, 5.0],
-            'library_codebase_size': [0.0, 2.5, 5.0]
-        }
+        # Test with empty list
+        result = normalize_date_values([])
+        self.assertEqual(result, [])
 
-        # Call the function
-        actual_output = normalize_dataset(dataset_columns)
+        # Test with list of one date
+        result = normalize_date_values(["2023-02-01T10:23:12Z"])
+        self.assertEqual(result, [0.0])
 
-        # Check the output against the expected output
-        self.assertEqual(actual_output, expected_output)
+        # Test with list of identical dates
+        result = normalize_date_values(["2023-02-01T10:23:12Z", "2023-02-01T10:23:12Z", "2023-02-01T10:23:12Z"])
+        self.assertEqual(result, [0.0, 0.0, 0.0])
+
+        # Test with list of non-date strings
+#        result = normalize_date_values(["hello", "world"])
+        #self.assertEqual(result, [])
+
+        ## Test with list of non-string values
+        #result = normalize_date_values([1, 2, 3])
+        #self.assertEqual(result, [])
+
+        # Test with original list of dates
+        result = normalize_date_values(date_list)
+        self.assertEqual(result, expected_output)
 
 if __name__ == '__main__':
     unittest.main()
