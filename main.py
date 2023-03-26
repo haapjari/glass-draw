@@ -18,7 +18,6 @@ def main():
     dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
     dataset_columns = a.add_total_column(dataset_columns, "code")
     dataset_columns = a.add_total_column(dataset_columns, "issue")
-
     normalized_dataset = a.normalize_dataset(dataset_columns, "normal")
 
     # Boilerplate Command Line Interface
@@ -141,10 +140,6 @@ def main():
                 print("Invalid input. Please enter a number (1-4) or 'q' to quit.")
                 continue
 
-    # TODO: Explore The Clusters
-    # TODO: Explotorary Data Analysis
-    # TODO: Rethink the concept of Quality Measure
-
         elif choice == 4:
             print("Choose a correlation type:")
             print("1. Pearson correlation (measures linear relationships)")
@@ -156,45 +151,36 @@ def main():
 
             if user_input.lower() == "q":
                 break
+           
+            valid_columns = ["open_issue_count", "closed_issue_count", "commit_count", "open_closed_ratio", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size", "library_to_original_ratio", "quality_measure", "total_codebase_size", "total_issue_count"]
 
- 
-    # repos = a.calculate_quality_measures(extract_repositories(normalized_dataset))
+            print(f"Valid columns: {', '.join(valid_columns)}")
+            print("Choose the x value:") 
+            x = input("> ")
+            print("Choose the y -value:")
+            y = input("> ")
+            
+            try:
+                corr_choice = int(user_input)
+            except ValueError:
+                print("Invalid input. Please enter a number (1-4) or 'q' to quit.")
+                continue
 
-#    valid_columns = ["open_issue_count", "closed_issue_count", "commit_count", "open_closed_ratio", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size", "library_to_original_ratio", "quality_measure"]
-
-    #while True:
-        #correlation_type = input("Enter correlation type (pearsonr or spearmanr) (or 'quit' to exit): ")
-        #if correlation_type.lower() == "quit":
-            #break
-        #if correlation_type.lower() not in ["pearsonr", "spearmanr"]:
-            #print("Error: Invalid correlation type.")
-            #continue
-
-        #print(f"Valid columns: {', '.join(valid_columns)}")
-
-        #x = input("Enter x parameter for plot (or 'quit' to exit): ")
-        #if x.lower() == "quit":
-            #break
-        #elif x not in valid_columns:
-            #print(f"Error: {x} is not a valid column.")
-            #continue
-
-        #y = input("Enter y parameter for plot (or 'quit' to exit): ")
-        #if y.lower() == "quit":
-            #break
-        #elif y not in valid_columns:
-            #print(f"Error: {y} is not a valid column.")
-            #continue
+            if corr_choice == 1:
+                plot("pearson", normalized_dataset, x, y)
+            elif corr_choice == 2:
+                plot("spearman", normalized_dataset, x, y) 
+            elif corr_choice == 3:
+                plot("kendall", normalized_dataset, x, y) 
+            elif corr_choice == 4:
+                continue
+            else:
+                print("Invalid input. Please enter a number (1-4) or 'q' to quit.")
+                continue
         
-        #plot(correlation_type, repos, x, y)
-
 
     # TODO: Explore Clusters
     # TODO: Explotorary Data Analaysis
-
-
-    # Correlation Analysis
-
    
 
 if __name__ == "__main__": 

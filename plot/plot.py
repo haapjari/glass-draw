@@ -8,7 +8,7 @@ from collections import OrderedDict
 import numpy
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, kendalltau
 import os
 import seaborn as sns
 from scipy.cluster import hierarchy
@@ -18,7 +18,7 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 mpl.use('agg')
 
 # Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
-def plot(analysis_method, repos, x_type, y_type): 
+def plot(analysis_method, dataset, x_type, y_type): 
     """
     Plots a scatter plot of the data points with a line of best fit, using the specified analysis method.
 
@@ -36,29 +36,28 @@ def plot(analysis_method, repos, x_type, y_type):
     None
 
     """
-    # Populate x and y axis lists.
-    x = []
-    y = []
-    for repo in repos:
-        if hasattr(repo, x_type):
-            x.append(getattr(repo, x_type))
-        
-        if hasattr(repo, y_type):
-            y.append(getattr(repo, y_type))
+
+    x = numpy.ravel(dataset[x_type])
+    y = numpy.ravel(dataset[y_type])
 
     coefficient = None
     p = None
 
-    if analysis_method == "pearsonr":
+    if analysis_method == "pearson":
         coefficient, p = pearsonr(x, y) 
         
         print("Pearson's Correlation Coefficient: {} and Probability Value: {}".format(coefficient, p))
 
-    if analysis_method == "spearmanr":
+    if analysis_method == "spearman":
         coefficient, p = spearmanr(x, y) 
         
         print("Spearman's Correlation Coefficient: {} and Probability Value: {}".format(coefficient, p))
-
+    
+    if analysis_method == "kendall":
+        coefficient, p = kendalltau(x, y) 
+        
+        print("Kendall's Correlation Coefficient: {} and Probability Value: {}".format(coefficient, p))
+    
         # Calculate coefficients, and function for the line of best fit.
     data = numpy.polyfit(x, y, 1)
     polynomial = numpy.poly1d(data)
@@ -72,11 +71,14 @@ def plot(analysis_method, repos, x_type, y_type):
 
     legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
 
-    if analysis_method == "pearsonr":
+    if analysis_method == "pearson":
         legend_coefficient.set_title("Pearson's Correlation Coefficient")
     
-    if analysis_method == "spearmanr":
+    if analysis_method == "spearman":
         legend_coefficient.set_title("Spearman's Correlation Coefficient")
+    
+    if analysis_method == "kendall":
+        legend_coefficient.set_title("Kendall's Correlation Coefficient")
 
     legend_coefficient.get_title().set_fontsize('small')
     legend_coefficient.get_title().set_fontweight('bold')
