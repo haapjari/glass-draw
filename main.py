@@ -1,5 +1,7 @@
 import analysis.analysis as a
 import utils.utils as utils 
+from models.repository import extract_repositories
+from plot.plot import plot
 
 def main():
     # Read a File to a Variable.
@@ -8,42 +10,47 @@ def main():
     # Extract the Columns from the File.
     dataset_columns = utils.extract_columns(dataset_file, ["repository_name", "repository_url", "open_issue_count", "closed_issue_count", "commit_count", "open_closed_ratio", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size", "library_to_original_ratio"])
 
-    # utils.print_columns(dataset_columns)
-    # utils.print_values(dataset_columns, "commit_count")
-
     # Normalize all the values to 0 - 1.
     normalized_dataset = a.normalize_dataset(dataset_columns)
 
-    # TODO
-    # qm = a.calculate_quality_measure(normalized_dataset)
+    # Adjust dataset, so all the normalized values will be
+    # handled similarly, bigger is better and smaller is worse.
+    adjusted_dataset = a.adjust_normalized_columns(normalized_dataset)
 
-    # Print the normalized values.
-    utils.print_values(normalized_dataset, "stargazer_count")
+    # Extract Repository objects from the data, which includes fields
+    # and they have normalized values of "adjusted_dataset".
+    # Append the list with "quality_measure" values.
+    # TODO: Rethink the Concept of the Quality Measure, is it actually usable 
+    # here.
+    repos = a.calculate_quality_measures(extract_repositories(adjusted_dataset))
 
-    # TODO: Calculate Mean (QM) and save that to separate variable.
+    valid_columns = ["open_issue_count", "closed_issue_count", "commit_count", "open_closed_ratio", "stargazer_count", "creation_date", "latest_release", "original_codebase_size", "library_codebase_size", "library_to_original_ratio", "quality_measure"]
 
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Open Closed Ratio
-    
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Stargazer Count
-   
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Commit Count
-   
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Creation Date
-  
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Latest Release
- 
-    # TODO: Calculate Spearman's Coefficient for: Ratio of Library Code : Average Quality Measure
+    while True:
+        correlation_type = input("Enter correlation type (pearsonr or spearmanr) (or 'quit' to exit): ")
+        if correlation_type.lower() == "quit":
+            break
+        if correlation_type.lower() not in ["pearsonr", "spearmanr"]:
+            print("Error: Invalid correlation type.")
+            continue
 
-    # TODO: Save Diagrams -> File.
+        print(f"Valid columns: {', '.join(valid_columns)}")
 
-    # TODO: Write also Pearson's Coefficient (?)
+        x = input("Enter x parameter for plot (or 'quit' to exit): ")
+        if x.lower() == "quit":
+            break
+        elif x not in valid_columns:
+            print(f"Error: {x} is not a valid column.")
+            continue
 
-    x = {"a": 1, "b": 2, "c": 3}
-    y = {"a": 4, "b": 5, "c": 6}
-    rho, p = a.calculate_spearmanr(x, y)
-
-    # print(rho)
-    # print(p)
+        y = input("Enter y parameter for plot (or 'quit' to exit): ")
+        if y.lower() == "quit":
+            break
+        elif y not in valid_columns:
+            print(f"Error: {y} is not a valid column.")
+            continue
+        
+        plot(correlation_type, repos, x, y)
 
 
 if __name__ == "__main__": 
