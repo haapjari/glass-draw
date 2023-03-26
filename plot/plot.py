@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from scipy.stats import pearsonr, spearmanr
 import os
+import seaborn as sns
+from scipy.cluster import hierarchy
+from scipy.spatial.distance import squareform
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 mpl.use('agg')
 
@@ -97,3 +101,138 @@ def plot(analysis_method, repos, x_type, y_type):
         os.makedirs("out")
 
     plt.savefig("out/"+iso_date_string + "_" + analysis_method + "_" + x_type + "_to_" + y_type +'.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
+
+
+def heatmap(dataset, corr_type, exclude_columns):
+    """
+    Generates a heatmap to display the correlation between variables in a given dataset.
+
+    Parameters:
+        dataset (dict): A dictionary containing numerical data in the form of numpy arrays.
+
+    Returns:
+        None.
+
+    Side effects:
+        - Deletes the "repository_name" and "repository_url" columns from the dataset.
+        - Reshapes each array in the dataset to be one-dimensional.
+        - Generates a correlation matrix for the dataset using pandas.
+        - Displays the correlation matrix as a heatmap using seaborn.
+        - Saves the resulting plot to a file in a subdirectory called "out" with a filename that includes the
+          current date and time in ISO format (e.g., "2022-12-31T23:59:59.999999_correlation_matrix.png").
+    """
+    # Delete Columns, that are not included in the heatmap.
+    for column in exclude_columns:
+        del dataset[column]
+
+    # Convert Arrays in Dictionary to be One-Dimensional
+    for key in dataset.keys():
+        dataset[key] = numpy.reshape(dataset[key], -1)
+
+    df = pd.DataFrame.from_dict(dataset)
+
+    corr_matrix = df.corr(corr_type)
+
+    fig, ax = plt.subplots(figsize=(21, 17))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax, fmt=".2f", 
+                annot_kws={"size": 16})
+
+    ax.set_title("Correlation Matrix: " + corr_type, fontsize=20, loc='right', x=1.3, y=1.05)
+
+    if not os.path.exists("out"):
+        os.makedirs("out")
+
+    now = datetime.now()
+    iso_date_string = now.isoformat()
+
+    # Save the plot to a file
+    plt.savefig('out' + '/' + iso_date_string + "_" + corr_type + "_" + 'correlation_matrix.png')
+
+
+def correlation_matrix(dataset, corr_type, exclude_columns):
+    # Delete Columns, that are not included in the heatmap.
+    for column in exclude_columns:
+        del dataset[column]
+
+    # Convert Arrays in Dictionary to be One-Dimensional
+    for key in dataset.keys():
+        dataset[key] = numpy.reshape(dataset[key], -1)
+
+    df = pd.DataFrame.from_dict(dataset)
+
+    corr_matrix = df.corr(corr_type)
+
+    return corr_matrix, df.columns
+
+     
+
+def visualize_categories(categories, corr_type, chart_type):
+    if chart_type == "bar":
+        x_labels = list(categories.keys())
+        y_values = [len(categories[k]) for k in x_labels]
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.bar(x_labels, y_values, color=['#cccccc', '#cccccc', '#cccccc', '#cccccc', '#cccccc'])
+        ax.set_title('Correlation Categories')
+        ax.set_xlabel('Category')
+        ax.set_ylabel('Number of Correlations')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.savefig('correlation_categories.png')
+    
+        if not os.path.exists("out"):
+            os.makedirs("out")
+
+        # Save the plot to a file
+        plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'correlation_categories' + "_" + chart_type + '.png')
+
+    if chart_type == "bubble":
+        fig, ax = plt.subplots()
+        ax.set_xlabel('Variable 1')
+        ax.set_ylabel('Variable 2')
+        ax.set_title('Correlation Coefficient Bubble Chart')
+
+        for category, pairs in categories.items():
+            for pair in pairs:
+                x, y = pair[0]
+                size = abs(pair[1]) * 100
+                color = 'red' if pair[1] < 0 else 'green'
+                ax.scatter(x, y, s=size, c=color, alpha=0.5, label=category)
+
+        ax.legend(loc='best', title='Category')
+        fig.tight_layout()
+
+        if not os.path.exists("out"):
+            os.makedirs("out")        
+
+        plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'correlation_categories' + "_" + chart_type + '.png')
+
+
+def visualize_dendrogram(corr_matrix, corr_type, linkage_method='ward'):
+    """
+    Visualizes a dendrogram of a correlation matrix using hierarchical clustering.
+
+    Parameters:
+    corr_matrix (pandas.DataFrame): a correlation matrix as a pandas DataFrame
+    linkage_method (str): the linkage method to use for clustering (default: 'ward')
+
+    Returns:
+    None
+    """
+
+    # Convert correlation matrix to distance matrix
+    dist_matrix = numpy.sqrt(1 - numpy.abs(corr_matrix))
+
+    # Perform hierarchical clustering
+    Z = linkage(squareform(dist_matrix), method='ward')
+
+    # Plot dendrogram with variable names
+    plt.figure(figsize=(10, 8))
+    dendrogram(Z, labels=corr_matrix.columns, orientation='right', leaf_font_size=7)
+
+    # Set plot parameters
+    plt.xlabel('Distance')
+
+    if not os.path.exists("out"):
+        os.makedirs("out")        
+
+    plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'dendogram.png')

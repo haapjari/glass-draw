@@ -27,29 +27,26 @@ def read_csv_file(file_path):
 
     return data
 
-def extract_columns(dataset_file: str, columns: list):
-    """
-    Extract the specified columns from a CSV file and return them as a dictionary.
+def extract_columns(dataset_file: str, columns: list, result_type):
+    if result_type == "tuple":
+        df = pd.read_csv(io.StringIO(dataset_file))
 
-    Args:
-        dataset_file (str): A string representing the contents of a CSV file.
-        columns (list): A list of strings representing the names of the columns to extract.
-
-    Returns:
-        dict: A dictionary with the same keys as the `columns` argument, where each
-            value is a list of tuples. Each tuple contains a unique identifier for the row
-            (the 'repository_url' column in the original file) and the corresponding value
-            for the specified column in that row.
-    """
-    # Create a DataFrame from the CSV string
-    df = pd.read_csv(io.StringIO(dataset_file))
-
-    extracted_columns = {}
+        extracted_columns = {}
     
-    for column in columns:
-        extracted_columns[column] = list(zip(df['repository_url'], df[column]))
+        for column in columns:
+            extracted_columns[column] = list(zip(df['repository_url'], df[column]))
 
-    return extracted_columns
+        return extracted_columns
+
+    if result_type == "normal":
+        df = pd.read_csv(io.StringIO(dataset_file))
+
+        extracted_columns = {}
+    
+        for column in columns:
+            extracted_columns[column] = df[column]
+
+        return extracted_columns
 
 def print_columns(dataset_columns):
     """
