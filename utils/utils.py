@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 from datetime import datetime
 import io
+import numpy as np
 
 # Read a .csv file and return a string.
 def read_csv_file(file_path):
@@ -92,3 +93,32 @@ def convert_to_unix_timestamp(date_string):
     unix_timestamp = datetime_object.timestamp()
     
     return unix_timestamp
+
+
+def convert_dict_to_dataframe(dataset):   
+    for key in dataset.keys():
+        dataset[key] = np.reshape(dataset[key], -1)
+
+    df = pd.DataFrame.from_dict(dataset)
+
+    return df 
+
+
+def convert_dataframe_to_dict(df):
+    dataset = df.to_dict()
+
+    for key in dataset.keys():
+        if isinstance(dataset[key], np.ndarray):
+            dataset[key] = np.reshape(dataset[key], -1)
+
+    return dataset
+
+
+def create_dictionary(dataset, columns):
+    dictionary = {}
+    for column in columns:
+        dictionary[column] = []
+        if column in dataset:
+            for value in dataset[column].values():
+                dictionary[column].append(value)
+    return dictionary

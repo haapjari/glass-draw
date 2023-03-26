@@ -78,7 +78,7 @@ def plot(analysis_method, dataset, x_type, y_type):
         legend_coefficient.set_title("Spearman's Correlation Coefficient")
     
     if analysis_method == "kendall":
-        legend_coefficient.set_title("Kendall's Correlation Coefficient")
+        legend_coefficient.set_title("'s Correlation Coefficient")
 
     legend_coefficient.get_title().set_fontsize('small')
     legend_coefficient.get_title().set_fontweight('bold')
@@ -124,8 +124,8 @@ def heatmap(dataset, corr_type, exclude_columns):
           current date and time in ISO format (e.g., "2022-12-31T23:59:59.999999_correlation_matrix.png").
     """
     # Delete Columns, that are not included in the heatmap.
-    for column in exclude_columns:
-        del dataset[column]
+    #for column in exclude_columns:
+        #del dataset[column]
 
     # Convert Arrays in Dictionary to be One-Dimensional
     for key in dataset.keys():
