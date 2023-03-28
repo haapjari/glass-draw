@@ -1,5 +1,6 @@
 import analysis.analysis as a
 import utils.utils as utils 
+import utils.github as gh
 import interface.interface as i
 from models.repository import extract_repositories
 from plot.plot import plot, heatmap, correlation_matrix, visualize_categories, visualize_dendrogram
@@ -33,24 +34,26 @@ def main():
     #visualize_dendrogram(matrix, "pearson")     
 
     # Calculate Quality Measures (Pearson)
-    dataset = utils.convert_dict_to_dataframe(normalized_dataset)
+    # dataset = utils.convert_dict_to_dataframe(normalized_dataset)
     # Expects Pandas DataFrame
-    dataset = qm.calculate_quality_scores(dataset, "pearson")
-    dataset = utils.convert_dataframe_to_dict(dataset)
+    # dataset = qm.calculate_quality_scores(dataset, "pearson")
+    # dataset = utils.convert_dataframe_to_dict(dataset)
 
-    columns = ["open_issue_count", "closed_issue_count", "commit_count", 
-               "open_closed_ratio", "stargazer_count", "creation_date", 
-               "latest_release", "original_codebase_size", 
-               "library_codebase_size", "library_to_original_ratio", 
-               "quality_measure", "total_codebase_size", "total_issue_count",
-               "maturity_score", "activity_score"]
+    # columns = ["open_issue_count", "closed_issue_count", "commit_count", 
+               #"open_closed_ratio", "stargazer_count", "creation_date", 
+               #"latest_release", "original_codebase_size", 
+               #"library_codebase_size", "library_to_original_ratio", 
+               #"quality_measure", "total_codebase_size", "total_issue_count",
+               #"maturity_score", "activity_score"]
 
-    dataset = utils.create_dictionary(dataset, columns)
+    # dataset = utils.create_dictionary(dataset, columns)
 
     # TODO: Extend Dataset
 
+    gh.test_github_api() 
+
     # Create Command Line Interface
-    i.create_commandline_interface(dataset)
+    # i.create_commandline_interface(dataset)
     # i.create_commandline_interface(normalized_dataset)
 
 
