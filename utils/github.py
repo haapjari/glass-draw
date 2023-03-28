@@ -34,6 +34,8 @@ def extend_dataset(input_file, output_file, additional_fields):
         writer.writerows(data)
 
 
+# This script tests the Github API.
+# The script uses the Github API to retrieve the kubernetes/kubernetes repository and then prints out the available fields for the repository.
 def test_github_api():
     g = Github(os.environ["GITHUB_API_TOKEN"])
 
@@ -46,6 +48,30 @@ def test_github_api():
         if not attr.startswith("_"):
             print(attr)
 
+
+# TODO: Untested
+# This function queries the latest 10 commits to the kubernetes/kubernetes repository
+def query_latest_commits():
+    # Create a PyGithub object with the API token from the .env file
+    g = Github(os.environ["GITHUB_API_TOKEN"])
+
+    # Get the kubernetes/kubernetes repository
+    repo = g.get_repo("kubernetes/kubernetes")
+
+    # Get the latest 10 commits for the repository
+    commits = repo.get_commits()[0:10]
+
+    # Loop over the commits and print out their dates and total number of changes
+    for commit in commits:
+        # Get the commit object for this commit
+        full_commit = repo.get_commit(commit.sha)
+
+        # Calculate the total number of changes
+        total_changes = full_commit.stats.additions + full_commit.stats.deletions
+
+        # Print out the date and total number of changes
+        print(f"Date: {full_commit.commit.author.date}")
+        print(f"Changes: {total_changes}")
 
 # TODO: Untested
 def query_latest_commits():
