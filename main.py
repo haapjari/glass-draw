@@ -50,9 +50,36 @@ def main():
 
     # TODO: Extend Dataset
 
-    gh.test_github_api() 
+    ## Numerical Columns
 
-    # Create Command Line Interface
+    # get_forks
+    # get_pulls
+    # get_network_events
+    # get_subscribers
+    # get_contributors
+    # get_deployments
+    # get_watchers
+
+    ## Custom Metadata Columns
+
+    # get_network_events
+    # get_notifications
+    # get_projects
+
+    ## Test Afterwards - Returns an Custom Object, needs a littlebit of work.
+
+    # get_stats_code_frequency
+    # get_stats_commit_activity
+    # get_stats_contributors
+    # get_stats_participation
+
+    #gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
+    pulls = gh.test_github_api("get_views_traffic")
+    print(pulls.totalCount)
+
+    #avg = gh.get_mean_additions_per_week("kubernetes", "kubernetes")
+    #print(avg)
+    ## Create Command Line Interface
     # i.create_commandline_interface(dataset)
     # i.create_commandline_interface(normalized_dataset)
 

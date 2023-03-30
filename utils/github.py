@@ -8,7 +8,7 @@ load_dotenv()
 
 
 # TODO: Untested
-def extend_dataset(input_file, output_file, additional_fields):
+def append_data(input_file, output_file, additional_fields):
     # Read in the data from the input CSV file
     with open(input_file) as f:
         reader = csv.reader(f)
@@ -22,7 +22,12 @@ def extend_dataset(input_file, output_file, additional_fields):
     for row in data:
         # Extract the repository owner and name from the URL in the second column
         owner, name = row[1].split("/")[-2:]
-        repo = g.get_repo(f"{owner}/{name}")
+
+        try:
+            repo = g.get_repo(f"{owner}/{name}")
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
 
         # Add the additional information to the row
         row.extend([getattr(repo, field, "") for field in additional_fields])
@@ -36,17 +41,29 @@ def extend_dataset(input_file, output_file, additional_fields):
 
 # This script tests the Github API.
 # The script uses the Github API to retrieve the kubernetes/kubernetes repository and then prints out the available fields for the repository.
-def test_github_api():
+def test_github_api(field):
     g = Github(os.environ["GITHUB_API_TOKEN"])
 
-    # Replace REPO_OWNER and REPO_NAME with the actual repository owner and name
-    repo = g.get_repo("kubernetes/kubernetes")
+    try:
+        repo = g.get_repo("kubernetes/kubernetes")
+    except Exception as e:
+        print(f"Error: {e}")
+
+    if field == "get_pulls":
+        attr = getattr(repo, field, "")
+        attr = attr(state="all")
+        return attr
+
+    attr = getattr(repo, field, "")
+    attr = attr()
+
+    return attr
 
     # Print out the available fields for the repository
-    print("Available fields for the repository:")
-    for attr in dir(repo):
-        if not attr.startswith("_"):
-            print(attr)
+#    print("Available fields for the repository:")
+    #for attr in dir(repo):
+        #if not attr.startswith("_"):
+            #print(attr)
 
 
 # TODO: Untested
@@ -125,3 +142,24 @@ def get_commit_info(repo_name, owner):
 
     # Return the dictionary of commit hashes mapped to their date and total number of changes
     return commit_info
+
+
+def get_mean_additions_per_week(owner, repo):
+    """
+    Computes the mean number of additions per week for a given repository.
+
+    :param owner: The repository owner.
+    :param repo: The repository name.
+    :return: The mean number of additions per week.
+    """
+    g = Github(os.environ["GITHUB_API_TOKEN"])
+    repo = g.get_repo(f"{owner}/{repo}")
+    data = repo.get_stats_code_frequency()
+    weeks = []
+    print(data)
+    #for stats in data:
+        #if hasattr(stats, 'week') and isinstance(stats.week, list) and len(stats.week) > 0 and isinstance(stats.week[0], dict): 
+            #weeks.extend(stats.week)
+    #num_weeks = len(weeks)
+    #num_additions = sum(w[1] for w in weeks)
+    #return num_additions / num_weeks
