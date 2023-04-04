@@ -1,16 +1,17 @@
-import analysis.analysis as a
-import utils.utils as utils 
-import utils.github as gh
+import analysis.analysis   as a
+import utils.utils         as u
+import utils.github        as gh
 import interface.interface as i
-from models.repository import extract_repositories
-from plot.plot import plot, heatmap, correlation_matrix, visualize_categories, visualize_dendrogram
-import pandas as pd
-import numpy as np
-import qm.qm as qm
+import models.repository   as r
+import plot.plot           as p
+import pandas              as pd
+import numpy               as np
+import quality.quality     as q
+
 
 def main():
     # Read a File to a Variable.
-    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
+    dataset_file = u.read_csv_file("data/cleaned_dataset.csv")
 
     # Columns that are going to be extracted from the .csv file.
     columns = ["repository_name", "repository_url", "open_issue_count", 
@@ -20,7 +21,7 @@ def main():
                "library_to_original_ratio"]
 
     # Extract the Columns from the File.
-    dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
+    dataset_columns = u.extract_columns(dataset_file, columns, "normal")
     dataset_columns = a.add_total_column(dataset_columns, "code")
     dataset_columns = a.add_total_column(dataset_columns, "issue")
     normalized_dataset = a.normalize_dataset(dataset_columns, "normal")
@@ -74,7 +75,7 @@ def main():
     # get_stats_participation
 
     #gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
-    pulls = gh.test_github_api("get_views_traffic")
+    pulls = gh.test_github_api("get_watchers")
     print(pulls.totalCount)
 
     #avg = gh.get_mean_additions_per_week("kubernetes", "kubernetes")
