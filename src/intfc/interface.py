@@ -1,6 +1,6 @@
-import analysis.analysis as a
-import utils.utils as utils 
-import interface.interface as i
+from ..alys.analysis import * as a 
+import ..utils.utils as utils 
+import ..intfc.interface as i
 from models.repository import extract_repositories
 from plot.plot import plot, heatmap, correlation_matrix, visualize_categories, visualize_dendrogram
 

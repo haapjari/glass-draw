@@ -1,17 +1,18 @@
-import analysis.analysis   as a
-import utils.utils         as u
-import utils.github        as gh
-import interface.interface as i
-import models.repository   as r
-import plot.plot           as p
+import src.alys.analysis as analysis
+import src.alys.quality as quality
+import src.utils.utils as utils
+import src.intfc.interface as interface
+import src.mdls.repository as repository
+import src.plot.plot as plot
+import src.ghb.github as github 
+
 import pandas              as pd
 import numpy               as np
-import quality.quality     as q
 
 
 def main():
     # Read a File to a Variable.
-    dataset_file = u.read_csv_file("data/cleaned_dataset.csv")
+    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
     # Columns that are going to be extracted from the .csv file.
     columns = ["repository_name", "repository_url", "open_issue_count", 
@@ -21,10 +22,10 @@ def main():
                "library_to_original_ratio"]
 
     # Extract the Columns from the File.
-    dataset_columns = u.extract_columns(dataset_file, columns, "normal")
-    dataset_columns = a.add_total_column(dataset_columns, "code")
-    dataset_columns = a.add_total_column(dataset_columns, "issue")
-    normalized_dataset = a.normalize_dataset(dataset_columns, "normal")
+    dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
+    dataset_columns = analysis.add_total_column(dataset_columns, "code")
+    dataset_columns = analysis.add_total_column(dataset_columns, "issue")
+    normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
 
     # TODO: Quality Measure Thing
     # i.create_commandline_interface(normalized_dataset) 
@@ -60,23 +61,27 @@ def main():
     # get_contributors
     # get_deployments
     # get_watchers
-
-    ## Custom Metadata Columns
-
-    # get_network_events
     # get_notifications
-    # get_projects
 
     ## Test Afterwards - Returns an Custom Object, needs a littlebit of work.
 
     # get_stats_code_frequency
+    # Retrieve a list of commits and the number of lines of code that were added
+    # and deleted in each commit for a specific repository.
+
     # get_stats_commit_activity
     # get_stats_contributors
     # get_stats_participation
 
     #gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
-    pulls = gh.test_github_api("get_watchers")
-    print(pulls.totalCount)
+    
+    gh = github.GitHub()
+    repo = gh.get_repo("kubernetes", "kubernetes")
+
+    print(repo.forks_count)
+    
+    # pulls = gh.test_github_api("get_notifications")
+    # print(pulls.totalCount)
 
     #avg = gh.get_mean_additions_per_week("kubernetes", "kubernetes")
     #print(avg)
