@@ -1,8 +1,7 @@
-from ..alys.analysis import * as a 
-import ..utils.utils as utils 
-import ..intfc.interface as i
-from models.repository import extract_repositories
-from plot.plot import plot, heatmap, correlation_matrix, visualize_categories, visualize_dendrogram
+from src.alys.analysis import *
+from src.mdls.repository import *
+from src.utils.utils import *
+from src.plot.plot import *
 
 
 def create_commandline_interface(normalized_dataset):
@@ -77,13 +76,13 @@ def create_commandline_interface(normalized_dataset):
 
             if corr_choice == 1:
                 matrix, names = correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
-                a.categorize_correlations(matrix, names, "pearson")
+                categorize_correlations(matrix, names, "pearson")
             elif corr_choice == 2:
                 matrix, names = correlation_matrix(normalized_dataset, "spearman", ["repository_name", "repository_url"])
-                a.categorize_correlations(matrix, names, "spearman")
+                categorize_correlations(matrix, names, "spearman")
             elif corr_choice == 3:
                 matrix, names = correlation_matrix(normalized_dataset, "kendall", ["repository_name", "repository_url"])
-                a.categorize_correlations(matrix, names, "kendall")
+                categorize_correlations(matrix, names, "kendall")
             elif corr_choice == 4:
                 continue
             else:
@@ -110,15 +109,15 @@ def create_commandline_interface(normalized_dataset):
 
             if corr_choice == 1:
                 matrix, names = correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
-                labels = a.cluster_correlation_matrix(matrix, "pearson", n_clusters=3)
+                labels = cluster_correlation_matrix(matrix, "pearson", n_clusters=3)
                 visualize_dendrogram(matrix, "pearson")
             elif corr_choice == 2:
                 matrix, names = correlation_matrix(normalized_dataset, "spearman", ["repository_name", "repository_url"])
-                labels = a.cluster_correlation_matrix(matrix, "spearman", n_clusters=3)
+                labels = cluster_correlation_matrix(matrix, "spearman", n_clusters=3)
                 visualize_dendrogram(matrix, "spearman")
             elif corr_choice == 3:
                 matrix, names = correlation_matrix(normalized_dataset, "kendall", ["repository_name", "repository_url"])
-                labels = a.cluster_correlation_matrix(matrix, "kendall", n_clusters=3)
+                labels = cluster_correlation_matrix(matrix, "kendall", n_clusters=3)
                 visualize_dendrogram(matrix, "kendall")
             elif corr_choice == 4:
                 continue

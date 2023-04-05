@@ -4,36 +4,37 @@ import src.utils.utils as utils
 import src.intfc.interface as interface
 import src.mdls.repository as repository
 import src.plot.plot as plot
-import src.ghb.github as github 
+import src.ghb.github as github
 
-import pandas              as pd
-import numpy               as np
+import pandas as pd
+import numpy as np
+import csv
 
 
 def main():
     # Read a File to a Variable.
-    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
+    # dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
     # Columns that are going to be extracted from the .csv file.
-    columns = ["repository_name", "repository_url", "open_issue_count", 
-               "closed_issue_count", "commit_count", "open_closed_ratio", 
-               "stargazer_count", "creation_date", "latest_release", 
-               "original_codebase_size", "library_codebase_size", 
-               "library_to_original_ratio"]
+    # columns = ["repository_name", "repository_url", "open_issue_count",
+               # "closed_issue_count", "commit_count", "open_closed_ratio",
+               # "stargazer_count", "creation_date", "latest_release",
+               # "original_codebase_size", "library_codebase_size",
+               # "library_to_original_ratio"]
 
-    # Extract the Columns from the File.
-    dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
-    dataset_columns = analysis.add_total_column(dataset_columns, "code")
-    dataset_columns = analysis.add_total_column(dataset_columns, "issue")
-    normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
+    # # Extract the Columns from the File.
+    # dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
+    # dataset_columns = analysis.add_total_column(dataset_columns, "code")
+    # dataset_columns = analysis.add_total_column(dataset_columns, "issue")
+    # normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
 
     # TODO: Quality Measure Thing
-    # i.create_commandline_interface(normalized_dataset) 
+    # i.create_commandline_interface(normalized_dataset)
 
     # Correlation Matrix & Dendogram
-    #matrix, names = correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
-    #labels = a.cluster_correlation_matrix(matrix, "pearson", n_clusters=3)
-    #visualize_dendrogram(matrix, "pearson")     
+    # matrix, names = correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
+    # labels = a.cluster_correlation_matrix(matrix, "pearson", n_clusters=3)
+    # visualize_dendrogram(matrix, "pearson")
 
     # Calculate Quality Measures (Pearson)
     # dataset = utils.convert_dict_to_dataframe(normalized_dataset)
@@ -41,54 +42,51 @@ def main():
     # dataset = qm.calculate_quality_scores(dataset, "pearson")
     # dataset = utils.convert_dataframe_to_dict(dataset)
 
-    # columns = ["open_issue_count", "closed_issue_count", "commit_count", 
-               #"open_closed_ratio", "stargazer_count", "creation_date", 
-               #"latest_release", "original_codebase_size", 
-               #"library_codebase_size", "library_to_original_ratio", 
-               #"quality_measure", "total_codebase_size", "total_issue_count",
-               #"maturity_score", "activity_score"]
+    # columns = ["open_issue_count", "closed_issue_count", "commit_count",
+    # "open_closed_ratio", "stargazer_count", "creation_date",
+    # "latest_release", "original_codebase_size",
+    # "library_codebase_size", "library_to_original_ratio",
+    # "quality_measure", "total_codebase_size", "total_issue_count",
+    # "maturity_score", "activity_score"]
 
     # dataset = utils.create_dictionary(dataset, columns)
 
     # TODO: Extend Dataset
 
-    ## Numerical Columns
+    # gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
 
-    # get_forks
-    # get_pulls
-    # get_network_events
-    # get_subscribers
-    # get_contributors
-    # get_deployments
-    # get_watchers
-    # get_notifications
+    # Read a File to a Variable.
+    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
-    ## Test Afterwards - Returns an Custom Object, needs a littlebit of work.
+    # Add Columns to the Dataset File
+    # Loop through the rows, extract name and owner of the repository
+    # Query for additional values and add them to the dataset
+    # Save the dataset to a new file
 
-    # get_stats_code_frequency
-    # Retrieve a list of commits and the number of lines of code that were added
-    # and deleted in each commit for a specific repository.
+    # gh = github.GitHub()
+    # repo = gh.get_repo("kubernetes", "kubernetes")
 
-    # get_stats_commit_activity
-    # get_stats_contributors
-    # get_stats_participation
+    # TODO: Add these values to the dataset
 
-    #gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
-    
-    gh = github.GitHub()
-    repo = gh.get_repo("kubernetes", "kubernetes")
+    # avg_weekly_additions, avg_weekly_deletions = gh.get_avg_weekly_additions(repo)
+    # forks = repo.forks_count
+    # pulls = repo.get_pulls().totalCount
+    # network_events = repo.get_network_events().totalCount
+    # subscribers = repo.get_subscribers().totalCount
+    # contributors = repo.get_contributors().totalCount
+    # deployments = repo.get_deployments().totalCount
+    # watchers = repo.get_watchers().totalCount
+    # notifications = repo.get_notifications().totalCount
+    # avg addition per contributor per wee
+    # avg deletion per contributor per week
 
-    print(repo.forks_count)
-    
-    # pulls = gh.test_github_api("get_notifications")
-    # print(pulls.totalCount)
+    ### --- ###
 
-    #avg = gh.get_mean_additions_per_week("kubernetes", "kubernetes")
-    #print(avg)
-    ## Create Command Line Interface
+    # Create Command Line Interface
+
     # i.create_commandline_interface(dataset)
     # i.create_commandline_interface(normalized_dataset)
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     main()

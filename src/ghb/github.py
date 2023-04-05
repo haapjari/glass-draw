@@ -32,6 +32,22 @@ class GitHub:
         return self.gh.get_repo(full_name)
 
 
+    def get_avg_weekly_additions(self, repo):
+        stats_code_frequency = repo.get_stats_code_frequency() 
+        avg_weekly_additions = 0
+        avg_weekly_deletions = 0
+        week_count = len(stats_code_frequency)
+    
+        for obj in stats_code_frequency:
+            avg_weekly_additions = avg_weekly_additions + obj.additions
+            avg_weekly_deletions = avg_weekly_deletions + obj.deletions
+
+        avg_weekly_additions = avg_weekly_additions / week_count
+        avg_weekly_deletions = avg_weekly_deletions / week_count
+
+        return avg_weekly_additions, avg_weekly_deletions
+
+
 # TODO: Untested
 # def append_data(input_file, output_file, additional_fields):
     # # Read in the data from the input CSV file
