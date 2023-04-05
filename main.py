@@ -13,26 +13,26 @@ import csv
 
 def main():
     # Read a File to a Variable.
-    # dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
+    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
     # Columns that are going to be extracted from the .csv file.
-    # columns = ["repository_name", "repository_url", "open_issue_count",
-               # "closed_issue_count", "commit_count", "open_closed_ratio",
-               # "stargazer_count", "creation_date", "latest_release",
-               # "original_codebase_size", "library_codebase_size",
-               # "library_to_original_ratio"]
+    columns = ["repository_name", "repository_url", "open_issue_count",
+               "closed_issue_count", "commit_count", "open_closed_ratio",
+               "stargazer_count", "creation_date", "latest_release",
+               "original_codebase_size", "library_codebase_size",
+               "library_to_original_ratio"]
 
     # # Extract the Columns from the File.
-    # dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
-    # dataset_columns = analysis.add_total_column(dataset_columns, "code")
-    # dataset_columns = analysis.add_total_column(dataset_columns, "issue")
-    # normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
+    dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
+    dataset_columns = analysis.add_total_column(dataset_columns, "code")
+    dataset_columns = analysis.add_total_column(dataset_columns, "issue")
+    normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
 
     # TODO: Quality Measure Thing
-    # i.create_commandline_interface(normalized_dataset)
+    interface.create_commandline_interface(normalized_dataset)
 
     # Correlation Matrix & Dendogram
-    # matrix, names = correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
+    # matrix, names = analysis.correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
     # labels = a.cluster_correlation_matrix(matrix, "pearson", n_clusters=3)
     # visualize_dendrogram(matrix, "pearson")
 
@@ -56,7 +56,7 @@ def main():
     # gh.append_data("data/cleaned_dataset.csv", "data/extended_dataset.csv", ["forks_count"])
 
     # Read a File to a Variable.
-    dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
+    # dataset_file = utils.read_csv_file("data/cleaned_dataset.csv")
 
     # Add Columns to the Dataset File
     # Loop through the rows, extract name and owner of the repository
