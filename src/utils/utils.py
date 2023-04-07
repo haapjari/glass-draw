@@ -5,6 +5,7 @@ import sys
 from datetime import datetime
 import io
 import numpy as np
+import github
 
 # Read a .csv file and return a string.
 def read_csv_file(file_path):
@@ -122,3 +123,49 @@ def create_dictionary(dataset, columns):
             for value in dataset[column].values():
                 dictionary[column].append(value)
     return dictionary
+
+
+def process_csv_file(input_file_path, output_file_path, gh):
+    try:
+        with open(input_file_path, mode='r', newline='', encoding='utf-8') as file:
+            # Create a csv reader object
+            csv_reader = csv.reader(file)
+            
+            header = next(csv_reader)
+            header.append("avg_weekly_additions")
+
+            # List to hold the updated rows
+            updated_rows = []
+
+            for row in csv_reader:
+                try:
+                    parts = row[1].split("/")
+                    name = parts[-1]
+                    owner = parts[-2]
+
+                    owner = gh.get_repo(owner, name)
+
+                    avg_weekly_additions, avg_weekly_deletions = gh.get_avg_weekly_additions(owner)
+
+                    # add a column value to the row
+                    row.append(avg_weekly_additions)
+
+                    updated_rows.append(row)
+
+                    print(f"Processing {owner.full_name}...")
+
+                except (github.GithubException, IndexError) as e:
+                    print(f"Error processing row {row}: {e}")
+
+            # Open the output CSV file and create a writer object
+            with open(output_file_path, 'w', newline='') as outfile:
+                writer = csv.writer(outfile)
+            
+                # Write the header row to the output file
+                writer.writerow(header)
+            
+                # Write the updated rows to the output file
+                writer.writerows(updated_rows)
+
+    except IOError as e:
+        print(f"Error reading file: {e}")
