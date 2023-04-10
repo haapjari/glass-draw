@@ -17,19 +17,18 @@ def main():
 
     # Columns that are going to be extracted from the .csv file.
     # columns = ["repository_name", "repository_url", "open_issue_count",
-#                "closed_issue_count", "commit_count", "open_closed_ratio",
-               # "stargazer_count", "creation_date", "latest_release",
-               # "original_codebase_size", "library_codebase_size",
-               # "library_to_original_ratio"]
+    #                "closed_issue_count", "commit_count", "open_closed_ratio",
+    #                "stargazer_count", "creation_date", "latest_release",
+    #                "original_codebase_size", "library_codebase_size",
+    #                "library_to_original_ratio"]
 
-    # # # Extract the Columns from the File.
+    # Extract the Columns from the File.
     # dataset_columns = utils.extract_columns(dataset_file, columns, "normal")
     # dataset_columns = analysis.add_total_column(dataset_columns, "code")
     # dataset_columns = analysis.add_total_column(dataset_columns, "issue")
     # normalized_dataset = analysis.normalize_dataset(dataset_columns, "normal")
 
     # TODO: Quality Measure Thing
-    # interface.create_commandline_interface(normalized_dataset)
 
     # Correlation Matrix & Dendogram
     # matrix, names = analysis.correlation_matrix(normalized_dataset, "pearson", ["repository_name", "repository_url"])
@@ -53,19 +52,19 @@ def main():
 
     #
     # TODO: Extend Dataset
-    # 
+    #
 
-    gh = github.GitHub()
-
-    utils.process_csv_file("data/cleaned_dataset.csv", "data/output.csv", gh)
-
-        # row = next(csv_reader) 
-        # parts = row[1].split("/")
-        # repo = parts[-1]
-        # name = parts[-2]
+    # row = next(csv_reader) 
+    # part^ = row[1].split("/")
+    # repo = part^[-1]
+    # name = part^[-2]
 
         # print(f"Repo: {repo}, Name: {name}")
         
+        
+    # Create for loop in python
+     
+    
 
         # TODO
         # This is how it's done in the loop.
@@ -103,12 +102,12 @@ def main():
     # avg addition per contributor per wee
     # avg deletion per contributor per week
 
-    ### --- ###
-
     # Create Command Line Interface
 
     # i.create_commandline_interface(dataset)
     # i.create_commandline_interface(normalized_dataset)
+
+    print("Hello")
 
 
 if __name__ == "__main__":
