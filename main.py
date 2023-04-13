@@ -92,32 +92,6 @@ def main():
     # 3. Normalize Dataset
     # --------------------------------------------------------- #
 
-    # CREATE TABLE normalized_repos (
-    #     repo_id INTEGER PRIMARY KEY,
-    #     open_issues INTEGER,
-    #     closed_issues INTEGER,
-    #     commits INTEGER,
-    #     self_written_loc INTEGER,
-    #     library_loc INTEGER,
-    #     stargazers INTEGER,
-    #     forks INTEGER,
-    #     open_pulls INTEGER,
-    #     closed_pulls INTEGER,
-    #     releases INTEGER,
-    #     network_events INTEGER,
-    #     subscribers INTEGER,
-    #     contributors INTEGER,
-    #     deployments INTEGER,
-    #     watchers INTEGER,
-    #     notifications INTEGER,
-    #     creation_date VARCHAR(255),
-    #     latest_release VARCHAR(255),
-    #     library_to_total_loc_ratio FLOAT,
-    #     open_issues_to_total_issues_ratio FLOAT,
-    #     open_pulls_to_total_pulls_ratio FLOAT,
-    #     FOREIGN KEY (repo_id) REFERENCES repos (repo_id)
-    # );
-
     # Columns: 
 
     # "repo_id" (Integer, PRIMARY KEY)
@@ -126,7 +100,9 @@ def main():
     # "commits" (Integer)
     # "self_written_loc" (Integer)
     # "library_loc" (Integer)
+    # "creation_date" (Varchar)
     # "stargazers" (Integer)
+    # "latest_release" (Varchar)
     # "forks" (Integer)
     # "open_pulls" (Integer)
     # "closed_pulls" (Integer)
@@ -134,11 +110,10 @@ def main():
     # "network_events" (Integer)
     # "subscribers" (Integer)
     # "contributors" (Integer)
-    # "deployments" (Integer)
     # "watchers" (Integer)
-    # "notifications"  (Integer)
-    # "creation_date" (Varchar)
-    # "latest_release" (Varchar)
+
+    # Derivative Columns:
+    #
     # "library_to_total_loc_ratio_rows" (Float)
     # "open_issues_to_total_issues_ratio_rows" (Float)
     # "open_pulls_to_total_pulls_ratio_rows" (Float)
