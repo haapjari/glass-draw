@@ -119,6 +119,8 @@ def main():
 
     #     lists = [("open_issues", open_issues), ("closed_issues", closed_issues), ("commits", commits), ("self_written_loc", self_written_loc), ("library_loc", library_loc), ("creation_date", creation_date), ("stargazers", stargazers), ("latest_release", latest_release), ("forks", forks), ("open_pulls", open_pulls), ("closed_pulls", closed_pulls), ("releases", releases), ("network_events", network_events), ("subscribers", subscribers), ("contributors", contributors), ("watchers", watchers), ("library_to_total_loc_ratio", library_to_total_loc_ratio), ("open_to_total_issues_ratio", open_to_total_issues_ratio), ("open_to_total_pulls_ratio", open_to_total_pulls_ratio)]
 
+    # TODO: Create Matrix / Categories Again, with the "Self-Written to Library LOC Ratio"
+
     # # spearman_corr_matrix = analysis.correlation_heatmap(lists, "spearman")
     # # kendall_corr_matrix = analysis.correlation_heatmap(lists, "kendall")
     # # pearson_corr_matrix = analysis.correlation_heatmap(lists, "pearson")
