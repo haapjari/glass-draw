@@ -1,55 +1,60 @@
 import pandas as pd
 
 
-def calculate_quality_scores(data, type):
-    # Check if the input type is valid
-    if type not in ["pearson", "spearman"]:
-        raise ValueError("Invalid input type. Please choose 'pearson' or 'spearman'.")
+# The "health_score" value calculated by the refactored function is essentially a weighted mean of the signals in the input dictionary. The function calculates the mean of each signal (by summing up the values in the list and dividing by the number of elements) and then adjusts the mean value with a predefined weight and sign. The weighted means of all signals are then summed up to produce the final health score.
 
-    # Define weights and signs for each input variable for maturity score
-    maturity_latest_release_weight = 0.4   # Bigger value is better
-    maturity_creation_date_weight = 0.4   # Smaller value is better
-    maturity_open_closed_ratio_weight = 0.2   # Smaller value is better
-    maturity_weights = {'latest_release': maturity_latest_release_weight,
-                        'creation_date': maturity_creation_date_weight,
-                        'open_closed_ratio': maturity_open_closed_ratio_weight}
-    maturity_signs = {'latest_release': 1, 'creation_date': -1, 'open_closed_ratio': -1}
 
-    # Define weights and signs for each input variable for activity score
-    activity_commit_count_weight = 0.2    # Bigger value is better
-    activity_stargazer_count_weight = 0.3   # Bigger value is better
-    activity_total_issue_count_weight = 0.1   # Smaller value is better
-    activity_closed_issue_count_weight = 0.2   # Bigger value is better
-    activity_open_issue_count_weight = 0.2  # Smaller value is better
-    activity_weights = {'commit_count': activity_commit_count_weight,
-                        'stargazer_count': activity_stargazer_count_weight,
-                        'total_issue_count': activity_total_issue_count_weight,
-                        'closed_issue_count': activity_closed_issue_count_weight,
-                        'open_issue_count': activity_open_issue_count_weight}
-    activity_signs = {'commit_count': 1, 'stargazer_count': 1,
-                      'total_issue_count': -1, 'closed_issue_count': 1, 'open_issue_count': -1}
+def calculate_qs_pearson_health(data):
+    health_weights = {
+        'open_to_total_pulls_ratio': 0.2,
+        'open_to_total_issues_ratio': 0.2,
+        'latest_release': 0.2,
+        'creation_date': 0.2,
+        'releases': 0.2
+    }
+    health_signs = {
+        'open_to_total_pulls_ratio': -1,
+        'open_to_total_issues_ratio': -1,
+        'latest_release': 1,
+        'creation_date': -1,
+        'releases': 1
+    }
 
-    # Compute the Maturity Score as a weighted average of the input variables
-    maturity_score = 0
-    for var in maturity_weights:
-        maturity_score += (maturity_signs[var] * maturity_weights[var] * data[var])
-    maturity_score = (maturity_score - maturity_score.min()) / (maturity_score.max() - maturity_score.min())
+    n = len(data['open_to_total_pulls_ratio'])
+    health_scores = [0] * n
 
-    # Compute the Activity Score as a weighted average of the input variables
-    activity_score = 0
-    for var in activity_weights:
-        activity_score += (activity_signs[var] * activity_weights[var] * data[var])
-    activity_score = (activity_score - activity_score.min()) / (activity_score.max() - activity_score.min())
+    for var in health_weights:
+        for i in range(n):
+            health_scores[i] += (health_signs[var] * health_weights[var] * data[var][i])
 
-    # Compute the Quality Measure as a weighted average of the Maturity Score and Activity Score
-    maturity_weight = 0.6
-    activity_weight = 0.4
-    quality_measure = (maturity_weight * maturity_score) + (activity_weight * activity_score)
+    return health_scores
 
-    # Add the Maturity Score, Activity Score, and Quality Measure to the input DataFrame
-    data['maturity_score'] = maturity_score
-    data['activity_score'] = activity_score
-    data['quality_measure'] = quality_measure
 
-    # Return the input DataFrame with added columns and correlation coefficients
-    return data
+def calculate_qs_pearson_engagement(data):
+    weights = {
+        'contributors': 0.14285714285714285,
+        'commits': 0.14285714285714285,
+        'network_events': 0.14285714285714285,
+        'forks': 0.14285714285714285,
+        'subscribers': 0.14285714285714285,
+        'watchers': 0.14285714285714285,
+        'stargazers': 0.14285714285714285
+    }
+    signs = {
+        'contributors': 1,
+        'commits': 1,
+        'network_events': 1,
+        'forks': 1,
+        'subscribers': 1,
+        'watchers': 1,
+        'stargazers': 1
+    }
+
+    n = len(data['contributors'])
+    scores = [0] * n
+
+    for var in weights:
+        for i in range(n):
+            scores[i] += (signs[var] * weights[var] * data[var][i])
+
+    return scores
