@@ -129,32 +129,99 @@ def visualize_categories(categories, corr_type, chart_type):
         plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'correlation_categories' + "_" + chart_type + '.png')
 
 
-def visualize_dendrogram(corr_matrix, corr_type, linkage_method='ward'):
+
+# def visualize_dendrogram(corr_matrix, corr_type, linkage_method='ward'):
+#     """
+#     Visualizes a dendrogram of a correlation matrix using hierarchical clustering.
+# 
+#     Parameters:
+#     corr_matrix (pandas.DataFrame): a correlation matrix as a pandas DataFrame
+#     linkage_method (str): the linkage method to use for clustering (default: 'ward')
+# 
+#     Returns:
+#     None
+#     """
+# 
+#     # Force the correlation matrix to be symmetric
+#     corr_matrix = (corr_matrix + corr_matrix.T) / 2
+# 
+#     # Convert correlation matrix to distance matrix
+#     dist_matrix = numpy.sqrt(1 - numpy.abs(corr_matrix))
+# 
+#     # Convert the distance matrix DataFrame to a NumPy array
+#     dist_matrix = dist_matrix.to_numpy()
+# 
+#     # Set the diagonal of the distance matrix to zero
+#     numpy.fill_diagonal(dist_matrix, 0)
+# 
+#     # Perform hierarchical clustering
+#     Z = linkage(squareform(dist_matrix), method='ward')
+# 
+#     # Plot dendrogram with variable names
+#     plt.figure(figsize=(10, 8))
+#     dendrogram(Z, labels=corr_matrix.columns, orientation='right', leaf_font_size=7)
+# 
+#     # Set plot parameters
+#     plt.xlabel('Distance')
+# 
+#     if not os.path.exists("out"):
+#         os.makedirs("out")
+# 
+#     plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'dendogram.png')
+
+
+def visualize_dendrogram(lists, corr_type, linkage_method='ward'):
     """
-    Visualizes a dendrogram of a correlation matrix using hierarchical clustering.
+    Visualizes a dendrogram using hierarchical clustering.
 
     Parameters:
-    corr_matrix (pandas.DataFrame): a correlation matrix as a pandas DataFrame
+    lists (list): a list of tuples containing the column names and corresponding values
+    corr_type (str): the type of correlation used (e.g., "spearman", default: "spearman")
     linkage_method (str): the linkage method to use for clustering (default: 'ward')
 
     Returns:
     None
     """
 
+    # Create a DataFrame from the lists
+    data = pd.DataFrame(dict(lists))
+
+    # Calculate the correlation matrix
+    if corr_type == "spearman":
+        corr_matrix = data.corr(method='spearman')
+
+    if corr_type == "pearson":
+        corr_matrix = data.corr(method='pearson')
+
+    if corr_type == "kendall":
+        corr_matrix = data.corr(method='kendall')
+
+    # Force the correlation matrix to be symmetric
+    corr_matrix = (corr_matrix + corr_matrix.T) / 2
+
     # Convert correlation matrix to distance matrix
     dist_matrix = numpy.sqrt(1 - numpy.abs(corr_matrix))
+
+    # Convert the distance matrix DataFrame to a NumPy array
+    dist_matrix = dist_matrix.to_numpy()
+
+    # Set the diagonal of the distance matrix to zero
+    numpy.fill_diagonal(dist_matrix, 0)
 
     # Perform hierarchical clustering
     Z = linkage(squareform(dist_matrix), method='ward')
 
+    # Extract the variable names from the lists
+    variable_names = [tup[0] for tup in lists]
+
     # Plot dendrogram with variable names
     plt.figure(figsize=(10, 8))
-    dendrogram(Z, labels=corr_matrix.columns, orientation='right', leaf_font_size=7)
+    dendrogram(Z, labels=variable_names, orientation='right', leaf_font_size=6)
 
     # Set plot parameters
     plt.xlabel('Distance')
 
     if not os.path.exists("out"):
-        os.makedirs("out")        
+        os.makedirs("out")
 
     plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'dendogram.png')

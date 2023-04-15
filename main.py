@@ -3,7 +3,7 @@ import src.alys.analysis as analysis
 # import src.utils.utils as utils
 # import src.intfc.interface as interface
 # import src.mdls.repository as repository
-# import src.plot.plot as plot
+import src.plot.plot as plot
 # import src.ghb.github as github
 # import pandas as pd
 # import numpy as np
@@ -94,25 +94,92 @@ def main():
 
         lists = [("open_issues", open_issues), ("closed_issues", closed_issues), ("commits", commits), ("self_written_loc", self_written_loc), ("library_loc", library_loc), ("creation_date", creation_date), ("stargazers", stargazers), ("latest_release", latest_release), ("forks", forks), ("open_pulls", open_pulls), ("closed_pulls", closed_pulls), ("releases", releases), ("network_events", network_events), ("subscribers", subscribers), ("contributors", contributors), ("watchers", watchers), ("library_to_total_loc_ratio", library_to_total_loc_ratio), ("open_to_total_issues_ratio", open_to_total_issues_ratio), ("open_to_total_pulls_ratio", open_to_total_pulls_ratio)]
 
-    spearman_corr_matrix = analysis.correlation_heatmap(lists, "spearman")
-    kendall_corr_matrix = analysis.correlation_heatmap(lists, "kendall")
-    pearson_corr_matrix = analysis.correlation_heatmap(lists, "pearson")
+    # spearman_corr_matrix = analysis.correlation_heatmap(lists, "spearman")
+    # kendall_corr_matrix = analysis.correlation_heatmap(lists, "kendall")
+    # pearson_corr_matrix = analysis.correlation_heatmap(lists, "pearson")
 
-    spearman_corr_categories = analysis.categorize_correlations(lists, "spearman") 
-    kendall_corr_categories = analysis.categorize_correlations(lists, "kendall")
-    pearson_corr_categories = analysis.categorize_correlations(lists, "pearson")
+    # spearman_corr_categories = analysis.categorize_correlations(lists, "spearman") 
+    # kendall_corr_categories = analysis.categorize_correlations(lists, "kendall")
+    # pearson_corr_categories = analysis.categorize_correlations(lists, "pearson")
 
-    #   - Draw a Dendogram (Visualize)
+    # plot.visualize_dendrogram(lists, "spearman")
+    # plot.visualize_dendrogram(lists, "pearson")
+    # plot.visualize_dendrogram(lists, "kendall")
+
+    # Pearson Quality Scores
+    # ----------------------
+    
+    # Quality Score: 1 "Project Health"
+
+    # open_to_total_pulls_ratio
+    # open_to_total_issues_ratio
+    # latest_release
+    # creation_date
+    # releases
+
+    # Quality Score: 2 "Community Engagement"
+
+    # contributors
+    # commits
+    # network_events
+    # forks
+    # subscribers
+    # watchers
+    # stargazers
+
+    # Spearman Quality Scores
+    # -----------------------
+
+    # Quality Score: "Development Efficiency"
+
+    # library_to_total_loc_ratio
+    # creation_date
+    # commits
+    # contributors
+    # releases
+    # latest_release
+
+    # Quality Score: 2 "Popularity"
+
+    # network_events
+    # forks
+    # subscribers
+    # watchers 
+    # stargazers
+
+    # Quality Score: 3 "Responsiveness"
+
+    # open_to_total_pulls_ratio
+    # open_to_total_issues_ratio
+
+    # Kendall Quality Scores
+    # ----------------------
+
+    # Quality Score: "Development Efficiency"
+
+    # library_to_total_loc_ratio
+    # creation_date
+    # commits
+    # contributors
+    # releases
+    # latest_release
+
+    # Quality Score: 2 "Popularity"
+
+    # network_events
+    # forks
+    # subscribers
+    # watchers 
+    # stargazers
+
+    # Quality Score: 3 "Responsiveness"
+
+    # open_to_total_pulls_ratio
+    # open_to_total_issues_ratio
+
     #   - Qualitative Reasoning for the Quality Score Names
     #   - Calculate Quality Scores
     #   - Calculate Quality Measures
-
-    # --------------------------------------------------------- #
-    # 5. New Correlation Matrix (Pearson, Kendall, Spearman)
-    # --------------------------------------------------------- #
-
-    #   - Pick up interesting correlations (Quality vs. Code Quantity)
-    #   - Linear Correlation Calculation and Hypothesis Testing
 
     # Close the Cursor and Connection
     cur.close()
