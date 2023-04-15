@@ -17,26 +17,9 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 
 mpl.use('agg')
 
+
 # Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
 def plot(analysis_method, dataset, x_type, y_type): 
-    """
-    Plots a scatter plot of the data points with a line of best fit, using the specified analysis method.
-
-    Parameters:
-    analysis_method (str): The statistical analysis method to be used. Must be "pearsonr" or "spearmanr".
-    repos (List): A list of repositories.
-    x_type (str): The type of data to be plotted on the x-axis.
-    y_type (str): The type of data to be plotted on the y-axis.
-    x_min (float): The minimum value for the x-axis.
-    x_max (float): The maximum value for the x-axis.
-    y_min (float): The minimum value for the y-axis.
-    y_max (float): The maximum value for the y-axis.
-
-    Returns:
-    None
-
-    """
-
     x = numpy.ravel(dataset[x_type])
     y = numpy.ravel(dataset[y_type])
 
@@ -104,69 +87,6 @@ def plot(analysis_method, dataset, x_type, y_type):
 
     plt.savefig("out/"+iso_date_string + "_" + analysis_method + "_" + x_type + "_to_" + y_type +'.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
 
-
-def heatmap(dataset, corr_type, exclude_columns):
-    """
-    Generates a heatmap to display the correlation between variables in a given dataset.
-
-    Parameters:
-        dataset (dict): A dictionary containing numerical data in the form of numpy arrays.
-
-    Returns:
-        None.
-
-    Side effects:
-        - Deletes the "repository_name" and "repository_url" columns from the dataset.
-        - Reshapes each array in the dataset to be one-dimensional.
-        - Generates a correlation matrix for the dataset using pandas.
-        - Displays the correlation matrix as a heatmap using seaborn.
-        - Saves the resulting plot to a file in a subdirectory called "out" with a filename that includes the
-          current date and time in ISO format (e.g., "2022-12-31T23:59:59.999999_correlation_matrix.png").
-    """
-    # Delete Columns, that are not included in the heatmap.
-    #for column in exclude_columns:
-        #del dataset[column]
-
-    # Convert Arrays in Dictionary to be One-Dimensional
-    for key in dataset.keys():
-        dataset[key] = numpy.reshape(dataset[key], -1)
-
-    df = pd.DataFrame.from_dict(dataset)
-
-    corr_matrix = df.corr(corr_type)
-
-    fig, ax = plt.subplots(figsize=(21, 17))
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax, fmt=".2f", 
-                annot_kws={"size": 16})
-
-    ax.set_title("Correlation Matrix: " + corr_type, fontsize=20, loc='right', x=1.3, y=1.05)
-
-    if not os.path.exists("out"):
-        os.makedirs("out")
-
-    now = datetime.now()
-    iso_date_string = now.isoformat()
-
-    # Save the plot to a file
-    plt.savefig('out' + '/' + iso_date_string + "_" + corr_type + "_" + 'correlation_matrix.png')
-
-
-def correlation_matrix(dataset, corr_type, exclude_columns):
-    # Delete Columns, that are not included in the heatmap.
-    for column in exclude_columns:
-        del dataset[column]
-
-    # Convert Arrays in Dictionary to be One-Dimensional
-    for key in dataset.keys():
-        dataset[key] = numpy.reshape(dataset[key], -1)
-
-    df = pd.DataFrame.from_dict(dataset)
-
-    corr_matrix = df.corr(corr_type)
-
-    return corr_matrix, df.columns
-
-     
 
 def visualize_categories(categories, corr_type, chart_type):
     if chart_type == "bar":
