@@ -120,58 +120,58 @@ def main():
     # creation_date - smaller is better
     # releases - bigger is better
 
-    # qs_pearson_health = {}
+    qs_pearson_health = {}
 
-    # qs_pearson_health["open_to_total_pulls_ratio"] = open_to_total_pulls_ratio
-    # qs_pearson_health["open_to_total_issues_ratio"] = open_to_total_issues_ratio
-    # qs_pearson_health["latest_release"] = latest_release
-    # qs_pearson_health["creation_date"] = creation_date
-    # qs_pearson_health["releases"] = releases
+    qs_pearson_health["open_to_total_pulls_ratio"] = open_to_total_pulls_ratio
+    qs_pearson_health["open_to_total_issues_ratio"] = open_to_total_issues_ratio
+    qs_pearson_health["latest_release"] = latest_release
+    qs_pearson_health["creation_date"] = creation_date
+    qs_pearson_health["releases"] = releases
 
-    # qs_pearson_health_score = quality.calculate_qs_pearson_health(qs_pearson_health)
-    # 
-    # # Quality Score: 2 "Engagement" - bigger is better
+    qs_pearson_health_score = quality.calculate_qs_pearson_health(qs_pearson_health)
+    
+    # Quality Score: 2 "Engagement" - bigger is better
 
-    # # contributors
-    # # commits
-    # # network_events
-    # # forks
-    # # subscribers
-    # # watchers
-    # # stargazers
+    # contributors
+    # commits
+    # network_events
+    # forks
+    # subscribers
+    # watchers
+    # stargazers
 
-    # qs_pearson_engagement = {}
-    # qs_pearson_engagement["contributors"] = contributors
-    # qs_pearson_engagement["commits"] = commits
-    # qs_pearson_engagement["network_events"] = network_events
-    # qs_pearson_engagement["forks"] = forks
-    # qs_pearson_engagement["subscribers"] = subscribers
-    # qs_pearson_engagement["watchers"] = watchers
-    # qs_pearson_engagement["stargazers"] = stargazers
+    qs_pearson_engagement = {}
+    qs_pearson_engagement["contributors"] = contributors
+    qs_pearson_engagement["commits"] = commits
+    qs_pearson_engagement["network_events"] = network_events
+    qs_pearson_engagement["forks"] = forks
+    qs_pearson_engagement["subscribers"] = subscribers
+    qs_pearson_engagement["watchers"] = watchers
+    qs_pearson_engagement["stargazers"] = stargazers
 
-    # qs_pearson_engagement_score = quality.calculate_qs_pearson_engagement(qs_pearson_engagement)
+    qs_pearson_engagement_score = quality.calculate_qs_pearson_engagement(qs_pearson_engagement)
 
-    # # Quality Measure
+    # Quality Measure
 
-    # engagement_weight = 0.5
-    # health_weight = 0.5
+    engagement_weight = 0.5
+    health_weight = 0.5
 
-    # weights = np.array([engagement_weight, health_weight])
+    weights = np.array([engagement_weight, health_weight])
 
-    # qm_pearson = np.average([qs_pearson_health_score, qs_pearson_engagement_score], axis=0, weights=weights)
+    qm_pearson = np.average([qs_pearson_health_score, qs_pearson_engagement_score], axis=0, weights=weights)
 
-    # # Pearson's Correlation Matrix with Quality Scores and Quality Measure    
+    # Pearson's Correlation Matrix with Quality Scores and Quality Measure    
 
-    # # qs_pearson_health_score
-    # # qs_pearson_engagement_score
-    # # qm_pearson
-    # # self_written_loc
-    # # library_loc
-    # # self_written_to_library_loc_ratio
-    # 
-    # qm_pearson_lists = [("qs_pearson_health_score", qs_pearson_health_score), ("qs_pearson_engagement_score", qs_pearson_engagement_score), ("qm_pearson", qm_pearson), ("self_written_loc", self_written_loc), ("library_loc", library_loc), ("self_written_to_library_loc_ratio", self_written_to_library_loc_ratio)]
+    # qs_pearson_health_score
+    # qs_pearson_engagement_score
+    # qm_pearson
+    # self_written_loc
+    # library_loc
+    # library_to_self_written_loc_ratio
+     
+    qm_pearson_lists = [("Health Score", qs_pearson_health_score), ("Engagement Score", qs_pearson_engagement_score), ("Quality Measure", qm_pearson), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Library to Self Written LOC Ratio", library_to_self_written_loc_ratio)]
 
-    # pearson_corr_matrix = analysis.correlation_heatmap(qm_pearson_lists, "pearson")
+    pearson_corr_matrix = analysis.correlation_heatmap(qm_pearson_lists, "pearson")
 
     # ---------------------------------- #
     # Calculate: Spearman Quality Scores #
