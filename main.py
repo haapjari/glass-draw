@@ -102,102 +102,56 @@ def main():
     # plot.visualize_dendrogram(lists, "pearson")
     # plot.visualize_dendrogram(lists, "kendall")
 
-    # ----------------------------------------------------- #
-    # Calculate: Pearson Quality Scores and Quality Measure #
-    # ----------------------------------------------------- #
-
-    # TODO
-
-    # Qualitative Reasoning for the Quality Score Names
-    # Calculate Quality Scores
-    # Calculate Quality Measures
-
-    # Quality Score: 1 "Health"
-
-    # open_to_total_pulls_ratio - smaller is better
-    # open_to_total_issues_ratio - smaller is better
-    # latest_release - bigger is better
-    # creation_date - smaller is better
-    # releases - bigger is better
-
-    qs_pearson_health = {}
-
-    qs_pearson_health["open_to_total_pulls_ratio"] = open_to_total_pulls_ratio
-    qs_pearson_health["open_to_total_issues_ratio"] = open_to_total_issues_ratio
-    qs_pearson_health["latest_release"] = latest_release
-    qs_pearson_health["creation_date"] = creation_date
-    qs_pearson_health["releases"] = releases
-
-    qs_pearson_health_score = quality.calculate_qs_pearson_health(qs_pearson_health)
-    
-    # Quality Score: 2 "Engagement" - bigger is better
-
-    # contributors
-    # commits
-    # network_events
-    # forks
-    # subscribers
-    # watchers
-    # stargazers
-
-    qs_pearson_engagement = {}
-    qs_pearson_engagement["contributors"] = contributors
-    qs_pearson_engagement["commits"] = commits
-    qs_pearson_engagement["network_events"] = network_events
-    qs_pearson_engagement["forks"] = forks
-    qs_pearson_engagement["subscribers"] = subscribers
-    qs_pearson_engagement["watchers"] = watchers
-    qs_pearson_engagement["stargazers"] = stargazers
-
-    qs_pearson_engagement_score = quality.calculate_qs_pearson_engagement(qs_pearson_engagement)
-
-    # Quality Measure
-
-    engagement_weight = 0.5
-    health_weight = 0.5
-
-    weights = np.array([engagement_weight, health_weight])
-
-    qm_pearson = np.average([qs_pearson_health_score, qs_pearson_engagement_score], axis=0, weights=weights)
-
-    # Pearson's Correlation Matrix with Quality Scores and Quality Measure    
-
-    # qs_pearson_health_score
-    # qs_pearson_engagement_score
-    # qm_pearson
-    # self_written_loc
-    # library_loc
-    # library_to_self_written_loc_ratio
-     
-    qm_pearson_lists = [("Health Score", qs_pearson_health_score), ("Engagement Score", qs_pearson_engagement_score), ("Quality Measure", qm_pearson), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Library to Self Written LOC Ratio", library_to_self_written_loc_ratio)]
-
-    pearson_corr_matrix = analysis.correlation_heatmap(qm_pearson_lists, "pearson")
-
     # ---------------------------------- #
     # Calculate: Spearman Quality Scores #
     # ---------------------------------- #
 
     # Quality Score: "Development Efficiency"
 
-    # library_to_total_loc_ratio
-    # creation_date
-    # commits
-    # contributors
-    # releases
-    # latest_release
+    # qs_spearman_efficiency = {}
 
-    # Quality Score: 2 "Popularity"
+    # qs_spearman_efficiency["creation_date"] = creation_date
+    # qs_spearman_efficiency["commits"] = commits
+    # qs_spearman_efficiency["latest_release"] = latest_release                                 
+    # qs_spearman_efficiency["creation_date"] = creation_date                                  
+    # qs_spearman_efficiency["releases"] = releases                                           
 
-    # network_events
-    # forks
-    # subscribers
-    # watchers 
-    # stargazers
+    # qs_spearman_efficiency_score = quality.calculate_qs_spearman_efficiency(qs_spearman_efficiency)
 
-    # Quality Score: 3 "Responsiveness"
+    # # Quality Score: "Popularity"
 
-    # open_to_total_pulls_ratio
-    # open_to_total_issues_ratio
+    # qs_spearman_popularity = {}
+   
+    # qs_spearman_popularity["network_events"] = network_events
+    # qs_spearman_popularity["forks"] = forks
+    # qs_spearman_popularity["subscribers"] = subscribers
+    # qs_spearman_popularity["watchers"] = watchers
+    # qs_spearman_popularity["stargazers"] = stargazers
+
+    # qs_spearman_popularity_score = quality.calculate_qs_spearman_popularity(qs_spearman_popularity)
+
+    # # Quality Score: "Responsiveness"
+
+    # qs_spearman_responsiveness = {}
+
+    # qs_spearman_responsiveness["open_to_total_pulls_ratio"] = open_to_total_pulls_ratio
+    # qs_spearman_responsiveness["open_to_total_issues_ratio"] = open_to_total_issues_ratio
+
+    # qs_spearman_responsiveness_score = quality.calculate_qs_spearman_responsiveness(qs_spearman_responsiveness)
+
+    # # Quality Measure
+
+    # efficiency_weight = 0.3333
+    # responsiveness_weight = 0.3333
+    # popularity_weight = 0.3333
+
+    # weights = np.array([efficiency_weight, responsiveness_weight, popularity_weight])
+
+    # qm_spearman = np.average([qs_spearman_efficiency_score, qs_spearman_responsiveness_score, qs_spearman_popularity_score], axis=0, weights=weights)
+
+    # qm_spearman_lists = [("Efficiency Score", qs_spearman_efficiency_score), ("Responsiveness Score", qs_spearman_responsiveness_score), ("Popularity Score", qs_spearman_popularity_score), ("Quality Measure", qm_spearman), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Library to Self Written LOC Ratio", library_to_self_written_loc_ratio)]
+
+    # spearman_corr_matrix = analysis.correlation_heatmap(qm_spearman_lists, "spearman")
 
     # ---------------------------------- #
     # Calculate: Kendall Quality Scores  #
@@ -205,25 +159,52 @@ def main():
 
     # Quality Score: "Development Efficiency"
 
-    # library_to_total_loc_ratio
-    # creation_date
-    # commits
-    # contributors
-    # releases
-    # latest_release
+    qs_kendall_efficiency = {}
+
+    qs_kendall_efficiency["creation_date"] = creation_date
+    qs_kendall_efficiency["commits"] = commits
+    qs_kendall_efficiency["latest_release"] = latest_release
+    qs_kendall_efficiency["creation_date"] = creation_date
+    qs_kendall_efficiency["releases"] = releases
+
+    qs_kendall_efficiency_score = quality.calculate_qs_kendall_efficiency(qs_kendall_efficiency)
+
+    # qs_spearman_popularity_score = quality.calculate_qs_spearman_popularity(qs_spearman_popularity)
 
     # Quality Score: 2 "Popularity"
 
-    # network_events
-    # forks
-    # subscribers
-    # watchers 
-    # stargazers
+    qs_kendall_popularity = {}
+
+    qs_kendall_popularity["network_events"] = network_events
+    qs_kendall_popularity["forks"] = forks
+    qs_kendall_popularity["subscribers"] = subscribers
+    qs_kendall_popularity["watchers"] = watchers
+    qs_kendall_popularity["stargazers"] = stargazers
+
+    qs_kendall_popularity_score = quality.calculate_qs_kendall_popularity(qs_kendall_popularity)
 
     # Quality Score: 3 "Responsiveness"
 
-    # open_to_total_pulls_ratio
-    # open_to_total_issues_ratio
+    qs_kenall_responsiveness = {}
+
+    qs_kenall_responsiveness["open_to_total_pulls_ratio"] = open_to_total_pulls_ratio
+    qs_kenall_responsiveness["open_to_total_issues_ratio"] = open_to_total_issues_ratio
+
+    qs_kendall_responsiveness_score = quality.calculate_qs_kendall_responsiveness(qs_kenall_responsiveness)
+
+    # Quality Measure
+
+    efficiency_weight = 0.3333
+    responsiveness_weight = 0.3333
+    popularity_weight = 0.3333
+
+    weights = np.array([efficiency_weight, responsiveness_weight, popularity_weight])
+
+    qm_kendall = np.average([qs_kendall_efficiency_score, qs_kendall_responsiveness_score, qs_kendall_popularity_score], axis=0, weights=weights)
+
+    qm_kendall_lists = [("Efficiency Score", qs_kendall_efficiency_score), ("Responsiveness Score", qs_kendall_responsiveness_score), ("Popularity Score", qs_kendall_popularity_score), ("Quality Measure", qm_kendall), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Library to Self Written LOC Ratio", library_to_self_written_loc_ratio)]
+
+    kendall_corr_matrix = analysis.correlation_heatmap(qm_kendall_lists, "kendall")
 
     # Close the Cursor and Connection
     cur.close()
