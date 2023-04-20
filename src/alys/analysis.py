@@ -11,6 +11,29 @@ from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.preprocessing import MinMaxScaler 
 
 
+def visualize(column_name, data_list):
+    # Create a DataFrame from the input list
+    df = pd.DataFrame(data_list, columns=[column_name])
+
+    # Plot histogram and KDE
+    plt.figure()
+    sns.histplot(df[column_name], kde=True)
+    sns.set(style="whitegrid", context="notebook")
+
+    # Add labels and title to the plot
+    plt.xlabel("Value", fontsize=10)
+    plt.ylabel("Frequency", fontsize=10)
+    plt.title(f"Distribution of {column_name}", fontsize=12)
+
+    # Create "out" folder if it doesn't exist
+    if not os.path.exists("out"):
+        os.makedirs("out")
+
+    # Save the plot to the "out" folder
+    file_name = f"{datetime.now().isoformat()}_{column_name}_distribution.png"
+    plt.savefig(f"out/{file_name}")
+
+
 def normalize_values(data):
     ids, values = zip(*data)
 

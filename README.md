@@ -20,7 +20,3 @@ The file should be cleaned and preprocessed to ensure that all data is in a cons
 3. Run the script from the command line using `python3 main.py`
 4. Follow the prompts to choose a correlation type and input parameters for the plot.
 5. The script will generate a plot showing the relationship between the selected parameters and saves that to the `out` folder.
-
-## TODO
-
-- Explore the Clusters
