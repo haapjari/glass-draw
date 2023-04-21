@@ -3,12 +3,43 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from datetime import datetime
 from scipy.stats import kendalltau, pearsonr, spearmanr
 from datetime import datetime
 from scipy.spatial.distance import squareform
 from scipy.cluster.hierarchy import linkage, fcluster
 from sklearn.preprocessing import MinMaxScaler 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+
+def multiple_linear_regression(independent_vars, dependent_var, column_names):
+    # Convert lists to a DataFrame
+    data = pd.DataFrame(np.column_stack(independent_vars), columns=column_names[:-1])
+    data[column_names[-1]] = dependent_var
+
+    # Define your independent (X) and dependent (y) variables
+    X = data[column_names[:-1]]
+    y = data[column_names[-1]]
+
+    # Split your data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # Create a linear regression model and fit it to the training data
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # Make predictions using the testing data
+    y_pred = model.predict(X_test)
+
+    # Evaluate the model
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    print("Mean Squared Error: ", mse)
+    print("R-squared: ", r2)
+
+    return model
 
 
 def visualize(column_name, data_list):

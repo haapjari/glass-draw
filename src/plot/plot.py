@@ -18,10 +18,9 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 mpl.use('agg')
 
 
-# Calculate and draw a plot for the Library to Original Ratio and Quality Measure.
-def plot(analysis_method, dataset, x_type, y_type): 
-    x = numpy.ravel(dataset[x_type])
-    y = numpy.ravel(dataset[y_type])
+def plot(analysis_method, x_values, x_name, y_values, y_name): 
+    x = numpy.ravel(x_values)
+    y = numpy.ravel(y_values)
 
     coefficient = None
     p = None
@@ -41,15 +40,15 @@ def plot(analysis_method, dataset, x_type, y_type):
         
         print("Kendall's Correlation Coefficient: {} and Probability Value: {}".format(coefficient, p))
     
-        # Calculate coefficients, and function for the line of best fit.
+    # Calculate coefficients, and function for the line of best fit.
     data = numpy.polyfit(x, y, 1)
     polynomial = numpy.poly1d(data)
 
     # Plot the Values
-    plt.scatter(x, y,color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
-    plt.plot(x, polynomial(x),color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
-    plt.xlabel(x_type)
-    plt.ylabel(y_type)
+    plt.scatter(x, y, color='black', s=0.5, alpha=1, marker="o", linewidth=0, label="Data Points", zorder=1, edgecolors=None, facecolors=None, antialiased=True, rasterized=None, norm=None, vmin=None, vmax=None, data=None)
+    plt.plot(x, polynomial(x), color='black', linewidth=0.1, label="Linear Regression", zorder=1, antialiased=True, rasterized=True, data=None)
+    plt.xlabel(x_name)
+    plt.ylabel(y_name)
     plt.autoscale(enable=True, axis='both', tight=None)
 
     legend_coefficient = plt.legend(["r = " + str(coefficient)], loc='upper right', bbox_to_anchor=(1.0, 1.0))
@@ -59,9 +58,6 @@ def plot(analysis_method, dataset, x_type, y_type):
     
     if analysis_method == "spearman":
         legend_coefficient.set_title("Spearman's Correlation Coefficient")
-    
-    if analysis_method == "kendall":
-        legend_coefficient.set_title("'s Correlation Coefficient")
 
     legend_coefficient.get_title().set_fontsize('small')
     legend_coefficient.get_title().set_fontweight('bold')
@@ -85,7 +81,7 @@ def plot(analysis_method, dataset, x_type, y_type):
     if not os.path.exists("out"):
         os.makedirs("out")
 
-    plt.savefig("out/"+iso_date_string + "_" + analysis_method + "_" + x_type + "_to_" + y_type +'.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
+    plt.savefig("out/" + iso_date_string + "_" + analysis_method + "_" + x_name + "_to_" + y_name + '.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
 
 
 def visualize_categories(categories, corr_type, chart_type):
@@ -127,47 +123,6 @@ def visualize_categories(categories, corr_type, chart_type):
             os.makedirs("out")        
 
         plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'correlation_categories' + "_" + chart_type + '.png')
-
-
-
-# def visualize_dendrogram(corr_matrix, corr_type, linkage_method='ward'):
-#     """
-#     Visualizes a dendrogram of a correlation matrix using hierarchical clustering.
-# 
-#     Parameters:
-#     corr_matrix (pandas.DataFrame): a correlation matrix as a pandas DataFrame
-#     linkage_method (str): the linkage method to use for clustering (default: 'ward')
-# 
-#     Returns:
-#     None
-#     """
-# 
-#     # Force the correlation matrix to be symmetric
-#     corr_matrix = (corr_matrix + corr_matrix.T) / 2
-# 
-#     # Convert correlation matrix to distance matrix
-#     dist_matrix = numpy.sqrt(1 - numpy.abs(corr_matrix))
-# 
-#     # Convert the distance matrix DataFrame to a NumPy array
-#     dist_matrix = dist_matrix.to_numpy()
-# 
-#     # Set the diagonal of the distance matrix to zero
-#     numpy.fill_diagonal(dist_matrix, 0)
-# 
-#     # Perform hierarchical clustering
-#     Z = linkage(squareform(dist_matrix), method='ward')
-# 
-#     # Plot dendrogram with variable names
-#     plt.figure(figsize=(10, 8))
-#     dendrogram(Z, labels=corr_matrix.columns, orientation='right', leaf_font_size=7)
-# 
-#     # Set plot parameters
-#     plt.xlabel('Distance')
-# 
-#     if not os.path.exists("out"):
-#         os.makedirs("out")
-# 
-#     plt.savefig('out' + '/' + datetime.now().isoformat() + "_" + corr_type + "_" + 'dendogram.png')
 
 
 def visualize_dendrogram(lists, corr_type, linkage_method='ward'):

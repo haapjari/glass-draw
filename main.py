@@ -6,7 +6,11 @@ from sklearn.preprocessing import MinMaxScaler
 from dotenv import load_dotenv
 import psycopg2
 import os
-
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
+import statsmodels.api as sm
+from scipy import stats
 
 def main():
     # --------------------------------------------------------- #
@@ -36,12 +40,12 @@ def main():
 
     table = "repos"
     normalized_table = "normalized_repos"
-    
+
     # --------------------------------------------------------- #
     # 1. Calculate Quality Measures (Pearson, Kendall, Spearman)
     # --------------------------------------------------------- #
     
-    cur.execute(f"SELECT open_issues, closed_issues, commits, self_written_loc, library_loc, creation_date, stargazers, latest_release, forks, open_pulls, closed_pulls, releases, network_events, subscribers, contributors, watchers, self_written_to_library_loc_ratio, library_to_self_written_loc_ratio, open_to_total_issues_ratio, open_to_total_pulls_ratio FROM {normalized_table}")
+    cur.execute(f"SELECT open_issues, closed_issues, commits, self_written_loc, library_loc, creation_date, stargazers, latest_release, forks, open_pulls, closed_pulls, releases, network_events, subscribers, contributors, watchers FROM {normalized_table}")
     
     rows = cur.fetchall()
 
@@ -61,10 +65,7 @@ def main():
     subscribers = []
     contributors = []
     watchers = []
-    self_written_to_library_loc_ratio = []
-    library_to_self_written_loc_ratio = []
-    open_to_total_issues_ratio = []
-    open_to_total_pulls_ratio = []
+    library_loc_proportion = []
 
     for row in rows:
         open_issues.append(row[0])
@@ -83,43 +84,97 @@ def main():
         subscribers.append(row[13])
         contributors.append(row[14])
         watchers.append(row[15])
-        self_written_to_library_loc_ratio.append(row[16])
-        library_to_self_written_loc_ratio.append(row[17])
-        open_to_total_issues_ratio.append(row[18])
-        open_to_total_pulls_ratio.append(row[19])
 
-    lists = [("Open Issues", open_issues), ("Closed Issues", closed_issues), ("Commits", commits), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Creation Date", creation_date), ("Stargazers", stargazers), ("Latest Release", latest_release), ("Forks", forks), ("Open Pulls", open_pulls), ("Closed Pulls", closed_pulls), ("Releases", releases), ("Network Events", network_events), ("Subscribers", subscribers), ("Contributors", contributors), ("Watchers", watchers)] 
+    # Define your column names
+    # popularity_columns = ['stargazers', 'forks', 'subscribers', 'watchers']
+    # activity_columns = ['open_issues', 'closed_issues', 'commits', 'open_pulls', 'closed_pulls', 'network_events', 'contributors']
+    # maturity_columns = ['creation_date', 'latest_release', 'releases']
 
-    analysis.visualize("Open Issues", open_issues) 
-    analysis.visualize("Closed Issues", closed_issues)
-    analysis.visualize("Commits", commits)
-    analysis.visualize("Self Written LOC", self_written_loc)
-    analysis.visualize("Library LOC", library_loc)
-    analysis.visualize("Creation Date", creation_date)
-    analysis.visualize("Stargazers", stargazers)
-    analysis.visualize("Latest Release", latest_release)
-    analysis.visualize("Forks", forks)
-    analysis.visualize("Open Pulls", open_pulls)
-    analysis.visualize("Closed Pulls", closed_pulls)
-    analysis.visualize("Releases", releases)
-    analysis.visualize("Network Events", network_events)
-    analysis.visualize("Subscribers", subscribers)
-    analysis.visualize("Contributors", contributors)
-    analysis.visualize("Watchers", watchers)
+    # lists = [("Open Issues", open_issues), ("Closed Issues", closed_issues), ("Commits", commits), ("Self Written LOC", self_written_loc), ("Library LOC", library_loc), ("Creation Date", creation_date), ("Stargazers", stargazers), ("Latest Release", latest_release), ("Forks", forks), ("Open Pulls", open_pulls), ("Closed Pulls", closed_pulls), ("Releases", releases), ("Network Events", network_events), ("Subscribers", subscribers), ("Contributors", contributors), ("Watchers", watchers)]
 
-#     spearman_corr_matrix = analysis.correlation_heatmap(lists, "spearman")
-#     kendall_corr_matrix = analysis.correlation_heatmap(lists, "kendall")
-#     pearson_corr_matrix = analysis.correlation_heatmap(lists, "pearson")
-# 
-#     spearman_corr_categories = analysis.categorize_correlations(lists, "spearman") 
-#     kendall_corr_categories = analysis.categorize_correlations(lists, "kendall")
-#     pearson_corr_categories = analysis.categorize_correlations(lists, "pearson")
-# 
-#     plot.visualize_dendrogram(lists, "spearman")
-#     plot.visualize_dendrogram(lists, "pearson")
-#     plot.visualize_dendrogram(lists, "kendall")
-# 
-    # Close the Cursor and Connection
+    # calculate and populate "library_loc_proportion" with a formula (Library LOC / (Self-Written LOC + Library LOC))
+    for i in range(len(library_loc)):
+        library_loc_proportion.append(library_loc[i] / (self_written_loc[i] + library_loc[i]))
+
+    # lists = [("Library LOC Proportion", library_loc_proportion), ("Self-Written LOC", self_written_loc), ("Library LOC", library_loc), ("Open Issues", open_issues), ("Closed Issues", closed_issues), ("Commits", commits), ("Creation Date", creation_date), ("Stargazers", stargazers), ("Latest Release", latest_release), ("Forks", forks), ("Open Pulls", open_pulls), ("Closed Pulls", closed_pulls), ("Releases", releases), ("Network Events", network_events), ("Subscribers", subscribers), ("Contributors", contributors), ("Watchers", watchers)]
+
+    # ---
+    data = pd.DataFrame({
+        'stargazers': stargazers,
+        'forks': forks,
+        'subscribers': subscribers,
+        'watchers': watchers,
+        'open_issues': open_issues,
+        'closed_issues': closed_issues,
+        'commits': commits,
+        'open_pulls': open_pulls,
+        'closed_pulls': closed_pulls,
+        'network_events': network_events,
+        'contributors': contributors,
+        'creation_date': creation_date,
+        'latest_release': latest_release,
+        'releases': releases,
+    })
+
+    # Calculate composite scores for each group of metrics
+    popularity_score = data.iloc[:, :4].sum(axis=1)
+    activity_score = data.iloc[:, 4:11].sum(axis=1)
+    maturity_score = data.iloc[:, 11:].sum(axis=1)
+
+    # Call the model
+    independent_vars = [popularity_score, activity_score, maturity_score]
+    dependent_var = library_loc_proportion
+    column_names = ['Popularity', 'Activity', 'Maturity', 'Library LOC Proportion']
+
+    model = analysis.multiple_linear_regression(independent_vars, dependent_var, column_names)
+
+    print("Intercept: ", model.intercept_)
+    print("Coefficients: ", model.coef_)
+
+    # plt.bar(column_names[:-1], model.coef_)
+    # plt.xlabel('Independent Variables')
+    # plt.ylabel('Coefficients')
+    # plt.title('Multiple Linear Regression Coefficients')
+    #
+    # # Create "out" folder if it doesn't exist
+    # if not os.path.exists("out"):
+    #     os.makedirs("out")
+
+    # # Save the plot to the "out" folder
+    # file_name = f"{datetime.now().isoformat()}_regression_model_coefficients.png"
+    # plt.savefig(f"out/{file_name}")
+
+    X = sm.add_constant(np.column_stack(independent_vars))
+    y = dependent_var
+    model_sm = sm.OLS(y, X).fit()
+
+    p_values = model_sm.pvalues[1:]  # Exclude the intercept
+    # print("P-values:", p_values)
+
+    # ---
+
+    significance_level = 0.05
+
+
+    #analysis.visualize("Open Issues", open_issues)
+
+    # plot.plot("spearman", self_written_loc, "Self Written LOC", open_issues, "Open Issues")
+
+    # plot.plot("spearman", library_loc, "Library LOC", open_issues, "Open Issues")
+
+    # spearman_corr_matrix = analysis.correlation_heatmap(lists, "spearman")
+    # kendall_corr_matrix = analysis.correlation_heatmap(lists, "kendall")
+    # pearson_corr_matrix = analysis.correlation_heatmap(lists, "pearson")
+    
+    # spearman_corr_categories = analysis.categorize_correlations(lists, "spearman") 
+    # kendall_corr_categories = analysis.categorize_correlations(lists, "kendall")
+    # pearson_corr_categories = analysis.categorize_correlations(lists, "pearson")
+    
+    # plot.visualize_dendrogram(lists, "spearman")
+    # plot.visualize_dendrogram(lists, "pearson")
+    # plot.visualize_dendrogram(lists, "kendall")
+
+# Close the Cursor and Connection
     cur.close()
     conn.close()
 

@@ -49,6 +49,7 @@ olefile==0.46
 packaging==23.0
 pandas==1.5.3
 paramiko==2.10.4
+patsy==0.5.3
 pexpect==4.8.0
 Pillow==9.4.0
 psycopg2-binary==2.9.6
@@ -79,6 +80,7 @@ SecretStorage==3.3.3
 setproctitle==1.2.2
 six==1.16.0
 soupsieve==2.3.2
+statsmodels==0.13.5
 systemd-python==235
 threadpoolctl==3.1.0
 ubuntu-advantage-tools==8001
