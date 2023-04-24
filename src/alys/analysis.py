@@ -42,7 +42,7 @@ def multiple_linear_regression(independent_vars, dependent_var, column_names):
     return model
 
 
-def visualize(column_name, data_list):
+def visualize_distribution(column_name, data_list):
     # Create a DataFrame from the input list
     df = pd.DataFrame(data_list, columns=[column_name])
 
