@@ -17,7 +17,7 @@ env:
 	python3 -m venv venv
 	
 activate:
-	source /home/haspe/uni/glsdrw/venv/bin/activate
+	source ./venv/bin/activate
 
 deactivate:
 	deactivate
