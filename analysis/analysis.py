@@ -7,7 +7,7 @@ from scipy.stats import kendalltau, pearsonr, spearmanr
 from datetime import datetime
 from scipy.spatial.distance import squareform
 from scipy.cluster.hierarchy import linkage, fcluster
-from sklearn.preprocessing import MinMaxScaler 
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
@@ -40,6 +40,29 @@ def multiple_linear_regression(independent_vars, dependent_var, column_names):
     print("R-squared: ", r2)
 
     return model
+
+
+def visualize_multiple_distributions(data_frame):
+    # Plot histogram and KDE
+    plt.figure()
+
+    # for f in data_frame:
+    sns.histplot(data_frame['watchers'], kde=True)
+
+    sns.set(style="whitegrid", context="notebook")
+
+    # Add labels and title to the plot
+    plt.xlabel("Value", fontsize=10)
+    plt.ylabel("Frequency", fontsize=10)
+    plt.title(f"Distributions", fontsize=12)
+
+    # Create "out" folder if it doesn't exist
+    if not os.path.exists("out"):
+        os.makedirs("out")
+
+    # Save the plot to the "out" folder
+    file_name = f"{datetime.now().isoformat()}_distributions.png"
+    plt.savefig(f"out/{file_name}")
 
 
 def visualize_distribution(column_name, data_list):
@@ -112,7 +135,7 @@ def correlation_heatmap(lists, corr_type):
 
     fig, ax = plt.subplots(figsize=(21, 17))
 
-    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm", vmin=-1, vmax=1, ax=ax, 
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm", vmin=-1, vmax=1, ax=ax,
                 annot_kws={"size": 16},
                 xticklabels=list(map(str, names)),
                 yticklabels=list(map(str, names)))
@@ -147,7 +170,7 @@ def categorize_correlations(lists, corr_type):
     variable_names = corr_matrix.columns
 
     for i in range(corr_matrix.shape[0]):
-        for j in range(i+1, corr_matrix.shape[1]):
+        for j in range(i + 1, corr_matrix.shape[1]):
             corr = corr_matrix.iloc[i, j]
             if corr <= -0.7 or corr >= 0.7:
                 categories["Very Strong"].append(((variable_names[i], variable_names[j]), corr))
@@ -163,7 +186,7 @@ def categorize_correlations(lists, corr_type):
     if not os.path.exists("out"):
         os.makedirs("out")
 
-    with open("out" + "/" + datetime.now().isoformat() + "_" +  corr_type + "_" + "categories.txt", 'w') as f:
+    with open("out" + "/" + datetime.now().isoformat() + "_" + corr_type + "_" + "categories.txt", 'w') as f:
         for category, values in categories.items():
             f.write(f"{category}:\n")
             for value in values:
@@ -196,10 +219,10 @@ def cluster_correlation_matrix(corr_matrix, corr_type, n_clusters=2, linkage_met
     labels = fcluster(Z, t=n_clusters, criterion='maxclust')
 
     if not os.path.exists("out"):
-        os.makedirs("out")        
+        os.makedirs("out")
 
     with open("out" + "/" + datetime.now().isoformat() + "_" + corr_type + "_" + "cluster_output.txt", "w") as f:
-        for i in range(1, n_clusters+1):
+        for i in range(1, n_clusters + 1):
             f.write(f"Cluster {i}:\n")
             cluster_vars = [col for col, label in zip(corr_matrix.columns, labels) if label == i]
             for var in cluster_vars:

@@ -1,4 +1,11 @@
+from datetime import datetime
+
 import csv
+import pandas as pd
+import seaborn as sns
+import analysis.analysis as analysis
+import matplotlib.pyplot as plt
+import numpy as np
 
 def main():
 
@@ -44,34 +51,83 @@ def main():
             contributors.append(row.get('contributors'))
             watchers.append(row.get('watchers'))
 
-    library_loc_proportion = []
-    self_written_loc_proportion = []
-    total_loc = []  
+    # library_loc_proportion = []
+    # self_written_loc_proportion = []
+    # total_loc = []
 
-    for i in range(len(library_loc)):
-        total = self_written_loc[i] + library_loc[i]  
-        total_loc.append(total)  
-        library_loc_proportion.append(library_loc[i] / total)  
-        self_written_loc_proportion.append(self_written_loc[i] / total)  
+    # for i in range(len(library_loc)):
+    #     total = self_written_loc[i] + library_loc[i]
+    #     total_loc.append(total)
+    #     library_loc_proportion.append(library_loc[i] / total)
+    #     self_written_loc_proportion.append(self_written_loc[i] / total)
 
     # TODO
 
-    # data = pd.DataFrame({
-    #     'stargazers': stargazers,
-    #     'forks': forks,
-    #     'subscribers': subscribers,
-    #     'watchers': watchers,
-    #     'open_issues': open_issues,
-    #     'closed_issues': closed_issues,
-    #     'commits': commits,
-    #     'open_pulls': open_pulls,
-    #     'closed_pulls': closed_pulls,
-    #     'network_events': network_events,
-    #     'contributors': contributors,
-    #     'creation_date': creation_date,
-    #     'latest_release': latest_release,
-    #     'releases': releases,
-    # })
+    data = pd.DataFrame({
+        'stargazers': stargazers,
+        'forks': forks,
+        'subscribers': subscribers,
+        'watchers': watchers,
+        'open_issues': open_issues,
+        'closed_issues': closed_issues,
+        'commits': commits,
+        'open_pulls': open_pulls,
+        'closed_pulls': closed_pulls,
+        'network_events': network_events,
+        'contributors': contributors,
+        'creation_date': creation_date,
+        'latest_release': latest_release,
+        'releases': releases,
+    })
+
+    stargazers = [float(x) for x in stargazers]
+    forks = [float(x) for x in forks]
+    subscribers = [float(x) for x in subscribers]
+    watchers = [float(x) for x in watchers]
+    open_issues = [float(x) for x in open_issues]
+    closed_issues = [float(x) for x in closed_issues]
+    commits = [float(x) for x in commits]
+    open_pulls = [float(x) for x in open_pulls]
+    closed_pulls = [float(x) for x in closed_pulls]
+    network_events = [float(x) for x in network_events]
+    contributors = [float(x) for x in contributors]
+    creation_date = [float(x) for x in creation_date]
+    latest_release = [float(x) for x in latest_release]
+    releases = [float(x) for x in releases]
+
+    bw_adj = 1
+    linewidth = 1
+
+    # Plotting the distribution
+    sns.kdeplot(stargazers, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(forks, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(subscribers, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(watchers, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(open_issues, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(closed_issues, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(commits, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(open_pulls, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(closed_pulls, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(network_events, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(contributors, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(creation_date, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(latest_release, bw_adjust=bw_adj, linewidth=linewidth)
+    sns.kdeplot(releases, bw_adjust=bw_adj, linewidth=linewidth)
+
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+
+    plt.grid(True, color='gray', linestyle='-', linewidth=0.5, alpha=0.75)
+
+    plt.minorticks_on()
+    plt.grid(which='minor', linestyle=':', linewidth='0.5', color='black', alpha=0.5)
+
+    # Save the plot to the "out" folder
+    file_name = f"{datetime.now().isoformat()}_distributions.png"
+    plt.savefig(f"out/{file_name}")
+    
+    # analysis.visualize_multiple_distributions(data)
+    # analysis.visualize_distribution("watchers", watchers)
 
     # Calculate composite scores for each group of metrics
     # popularity_score = data.iloc[:, :4].sum(axis=1)

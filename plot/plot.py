@@ -1,22 +1,15 @@
 from datetime import datetime
-import csv
-import chardet
-import sys
-import io
-import pandas as pd
-from collections import OrderedDict
-import numpy
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 from scipy.stats import pearsonr, spearmanr, kendalltau
-import os
-import seaborn as sns
-from scipy.cluster import hierarchy
 from scipy.spatial.distance import squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
 
-mpl.use('agg')
+import pandas as pd
+import numpy
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import os
 
+mpl.use('agg')
 
 def plot(analysis_method, x_values, x_name, y_values, y_name): 
     x = numpy.ravel(x_values)
